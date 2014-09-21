@@ -163,7 +163,7 @@ exports.resetpassword = function(req, res, next) {
       req.logIn(user, function(err) {
         if (err) return next(err);
         return res.send({
-          user: user,
+          user: user
         });
       });
     });
@@ -234,4 +234,54 @@ exports.forgotpassword = function(req, res, next) {
       res.json(response);
     }
   );
+};
+
+
+/**
+ * List of Users
+ */
+exports.all = function(req, res) {
+    User.find().exec(function(err, users) {
+        if (err) {
+            return res.json(500, {
+                error: 'Cannot list the users'
+            });
+        }
+        res.json(users);
+
+    });
+};
+
+
+exports.add = function(req, res) {
+//Preuba luego borrar todo esto
+    var user1 = {
+        name: 'Full name',
+        email: 'cadsfdfsdavfdavsrlos@infomed.sld.cu',
+        username: 'teresa',
+        password: 'password',
+        provider: 'local'
+    };
+
+    var user = new User(user1);
+    user.save(function(err) {
+        if (err) {
+            var modelErrors = [];
+
+            if (err.errors) {
+                for (var x in err.errors) {
+                    modelErrors.push({
+                        param: x,
+                        msg: err.errors[x].message,
+                        value: err.errors[x].value
+                    });
+                }
+                res.status(400).send(modelErrors);
+            }
+            return res.status(400);
+        }
+
+        res.json(user);
+    });
+
 };

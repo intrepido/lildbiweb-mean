@@ -5,7 +5,7 @@ var path = require('path'),
 
 module.exports = {
   root: rootPath,
-  port: process.env.PORT || 3000,
+  port: process.env.PORT || 3001,
   hostname: process.env.HOST || process.env.HOSTNAME,
   db: process.env.MONGOHQ_URL,
   templateEngine: 'swig',
@@ -32,5 +32,8 @@ module.exports = {
   },
 
   // The session cookie name
-  sessionName: 'connect.sid'
+  sessionName: 'connect.sid',
+
+  //Roles
+   roles: ['authenticated', 'administrator', 'editor', 'documentalist']
 };

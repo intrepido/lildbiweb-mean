@@ -18,6 +18,12 @@ Icon
 .idea/
 
 # --------------------
+# WebStorm Files
+# --------------------
+*.tern-project
+*.project
+
+# --------------------
 # Netbeans Files
 # --------------------
 nbproject/private/
