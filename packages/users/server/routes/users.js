@@ -3,16 +3,6 @@
 // User routes use users controller
 var users = require('../controllers/users');
 
-
-// User authorization helpers
-var hasAuthorization = function(req, res, next) {
-    if (!req.user.isAdmin && req.article.user.id !== req.user.id) {
-        return res.send(401, 'User is not authorized');
-    }
-    next();
-};
-
-
 module.exports = function (MeanUser, app, auth, database, passport) {
 
     app.route('/logout')
@@ -46,7 +36,7 @@ module.exports = function (MeanUser, app, auth, database, passport) {
         }), function (req, res) {
             res.send({
                 user: req.user,
-                redirect: (req.user.roles.length == 1 && req.user.roles.indexOf('authenticated') !== -1) ? false : req.get('referer')
+                redirect: (req.user.roles.length === 1 && req.user.roles.indexOf('authenticated') !== -1) ? false : req.get('referer')
             });
         });
 

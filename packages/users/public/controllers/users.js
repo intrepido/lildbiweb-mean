@@ -11,7 +11,7 @@ angular.module('mean.users').controller('UsersController', ['$scope', '$statePar
 
         $scope.create = function (isValid) {
             if (isValid) {
-                var article = new Articles({
+                var article = new Users({
                     title: this.title,
                     content: this.content
                 });
@@ -65,7 +65,7 @@ angular.module('mean.users').controller('UsersController', ['$scope', '$statePar
         };
 
         $scope.findOne = function () {
-            Articles.get({
+            Users.get({
                 articleId: $stateParams.articleId
             }, function (article) {
                 $scope.article = article;

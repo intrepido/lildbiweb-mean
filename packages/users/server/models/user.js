@@ -27,7 +27,7 @@ var validateRoles = function (value) {
         });
     }
 
-    if (result.length == value.length)
+    if (result.length === value.length)
         return true;
     else
         return false;
@@ -90,7 +90,7 @@ var UserSchema = new Schema({
     roles: {
         type: Array,
         default: ['authenticated'],
-        validate: [validateRoles, "Roles doesn't match"]
+        validate: [validateRoles, 'Roles does not match']
     },
     hashed_password: {
         type: String,

@@ -37,7 +37,6 @@ describe('<Unit Test>', function() {
         name: 'Full name',
         email: 'test' + getRandomString() + '@test.com',
         username: getRandomString(),
-        roles: ["Administrator", "Editor"],
         password: 'password',
         provider: 'local'
       };
@@ -46,7 +45,7 @@ describe('<Unit Test>', function() {
         name: 'Full name',
         email: 'test' + getRandomString() + '@test.com',
         username: getRandomString(),
-        roles: ["Editor"],
+        roles: ['editor'],
         password: 'password',
         provider: 'local'
       };
