@@ -31,11 +31,18 @@ describe('<Unit Test>', function () {
                 dictionary = new Dictionary({
                     v1: 'BR1.1',
                     v3: [
-                        {"_": "BR1.1", "a": "1.00", "b": "T17a", "c": ['v.1', 'e.2'], "t": "1001"},
-                        {"_": "BR67.1", "a": "614.32", "b": "T17a", "c": ['v.2'], "t": "25"},
-                        {"b": "T17a", "c": ['v.2'], "t": "25"}
+                        {'_': 'BR1.1', 'a': '1.00', 'b': 'T17a', 'c': ['v.1', 'e.2'], 't': '1001'},
+                        {'_': 'BR67.1', 'a': '614.32', 'b': 'T17a', 'c': ['v.2'], 't': '25'},
+                        {'b': 'T17a', 'c': ['v.2'], 't': '25'}
                     ],
-                    v5: 'SCP'
+                    v5: 'SCP',
+                    v6: 'as',
+                    v10: [
+                        {'_': 'Fidel Santana', '1': 'fasd', '2': 'T17a', '3': 'dfasda', 'r': '1001'},
+                        {'_': 'Fernanadno Sanchez', '1': 'fdaasd', '2': 'd4545T17a', '3': '777a', 'r': '1001'},
+                        {'_': 'Gregorio Saltamonte'}
+                    ],
+                    v56: 'fasdfasd'
                 });
 
                 done();
