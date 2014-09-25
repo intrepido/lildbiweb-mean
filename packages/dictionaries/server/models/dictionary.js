@@ -10,14 +10,15 @@ var mongoose = require('mongoose'),
 /**
  * Validations
  */
-/*
-var validate_v10_1 = function (value) {
-    if (this.parent().v6 === 'as')
-        return value ? true : false;
-    else
-        return true;
+
+var validate_v10_s1 = function (value) {
+    if(value !== 's.af' && value){ //Si el subcampo s1 de v10, existe y tiene una afiliacion valida, entonces el subcampo p es obligatorio
+        if(!this.p)
+            return false;
+    }
+    return true
 };
-*/
+
 
 /*
  DictionarySchema.path('v10').validate(function(value) {
@@ -59,6 +60,10 @@ var fileExtension = ['css','cmp']; //Codificador
 var fileType = ['css','cmp']; //Codificador
 
 var registerType = ['a','c','d']; //Codificador
+
+var responsibilityGrade = ['edt', 'com', 'coord', 'org']; //Codificador
+
+var idiomCode = ['en', 'es', 'pt', 'fr']; //Codificador
 
 /**
  * Dictionary Schema
@@ -143,41 +148,90 @@ var DictionarySchema = new Schema({
         {
             _id: false,
             _: String, //nombre de la persona responsable por el contenido intelectual de un documento
-            s1: String, //afiliación
+            s1: { //afiliación
+                type: String,
+                validate: [validate_v10_s1, 'The country is obligatory when the affiliation was especificated']
+            },
             s2: String, //afiliación
             s3: String, //afiliación
             p: String, //país (NOTA: Por que no tiene un codificador de pais en este subcampo?)
             c: String, //ciudad
-            r: Number //grado de responsabilidad
+            r: { //grado de responsabilidad
+                type: String,
+                enum: responsibilityGrade
+            }
         }
     ],
     v11:[ //AUTOR INSTITUCIONAL (nivel analítico)
         {
             _id: false,
             _: String, //nombre de la institución responsable por el contenido intelectual de un documento
-            r: Number //grado de resonsabilidad
+            r: { //grado de responsabilidad
+                type: String,
+                enum: responsibilityGrade
+            }
         }
-    ]
+    ],
+    v12:[ //TÍTULO (nivel analítico)
+        {
+            _id: false,
+            _: { //título del documento
+                type: String,
+                required: true
+            },
+            i: { //código del idioma
+                type: String,
+                enum: idiomCode,
+                required: true
+            }
+        }
+    ],
+    v13:{ //TÍTULO TRADUCIDO AL INGLÉS (nivel analítico)
+        type: String,
+        trim: true
+    },
+    v14:[ //PÁGINAS (nivel analítico)
+        {
+            _id: false,
+            _: { //paginacion irregular o inexistente
+                type: String
+            },
+            f: { //número inicial
+                type: String
+            },
+            l: { //número final
+                type: String
+            }
+        }
+    ],
 }, { strict: true });
 
+
+
+DictionarySchema.path('v12').validate(function(value) {
+    return value.length ? true : false;
+}, 'The title cannot be blank');
 
 /**
  * Pre-save hook
  */
-DictionarySchema.pre('save', function (next) {
+DictionarySchema.pre('save', function (next) { //Las reglas que se definen aqui, tienen que existir independientememte de si el campo al que se le aplica es llenado o no
+
     if (!this.v10.length && !this.v11.length){ //Si v10 y v11 no son llenados, entonces ponerle valor 'Anon' a v10
         this.v10.push({'_': 'Anon'});
     }
+
     if(this.v10.length && this.v11.length){ //Si v10 y v11 son llenados, entonces solo dejar v10 con valor
         this.v11.splice(0, this.v11.length);
     }
-    if(this.v6 === 'as'){ //Si v6 es una analitica periodica
-        for(var key in  this.v10){
-            if(!this.v10[key].s1)
+
+    if(this.v6 === 'as'){ //Si v6 es una analitica de serie periodica entonces el campo s1 es obligatorio
+        for (var i = 0; i < this.v10.length; i++) {
+            if(!this.v10[i].s1)
                 return next(new Error('The affiliation is obligatory for analitics of periodic series'));
         }
     }
-        //return next(new Error('Invalid password'));
+
     next();
 });
 

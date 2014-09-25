@@ -37,12 +37,14 @@ describe('<Unit Test>', function () {
                     ],
                     v5: 'SCP',
                     v6: 'as',
-                    v10: [
-                        {'_': 'Fidel Santana', '1': 'fasd', '2': 'T17a', '3': 'dfasda', 'r': '1001'},
-                        {'_': 'Fernanadno Sanchez', '1': 'fdaasd', '2': 'd4545T17a', '3': '777a', 'r': '1001'},
-                        {'_': 'Gregorio Saltamonte'}
+                    v11: [
+                        {'_': 'Fidel Santana', 'r': 'edt'},
+                        {'_': 'Fernanadno Sanchez', 'r': 'edt'}
                     ],
-                    v56: 'fasdfasd'
+                    v12: [
+                        {'_': 'Alergias humanas', 'i': 'es'},
+                        {'_': 'Fernanadno Sanchez', 'i': 'en'}
+                    ]
                 });
 
                 done();
