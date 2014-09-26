@@ -11,6 +11,11 @@ var mongoose = require('mongoose'),
 
 
 exports.add = function (req, res) {
+
+
+    var myRe = /\w+/;
+    var myArray = myRe.exec("John Smith");
+
 //Preuba luego borrar todo esto
     var dictionary = new Dictionary({
         v1: 'BR1.1',
@@ -19,12 +24,23 @@ exports.add = function (req, res) {
             {'_': 'BR67.1', 'a': '614.32', 'b': 'T17a', 'c': ['v.2'], 't': '25'},
             {'b': 'T17a', 'c': ['v.2'], 't': '25'}
         ],
-        v5: 'SCP',
+        v5: 'T',
         v6: 'as',
-        v10: [
-            {'_': 'Fidel Santana', 's1': 'fasd', 's2': 'T17a', 's3': 'dfasda', 'p': 'Cuba', 'c': 'La Habana'},
-            {'_': 'Fernanadno Sanchez', 's1': 'fasdrrrrrrrrrrrrr', 's2': 'd4545T17a', 's3': '777a', 'p': 'Italia', 'c': 'Roma'},
-            {'_': 'Gregorio Saltamonte', 's1': 's.af'}
+        v11: [
+            {'_': 'Fidel Santana', 'r': 'edt'},
+            {'_': 'Fernanadno Sanchez', 'r': 'edt'}
+        ],
+        v12: [
+            {'_': 'Alergias humanas', 'i': 'es'},
+            {'_': 'Fernanadno Sanchez', 'i': 'en'}
+        ],
+        v14: [
+            {'_': '[24543-3]','f': 5},
+            {'_': '[1-3]', 'f': 1, 'l': 500}
+        ],
+        v16: [
+            {'_': 'Fidel Santana', 's1': 'dasdfas', 's2': 'jjjjjjj', 'p': 'Iran', 'r': 'edt'},
+            {'_': 'Fernanadno Sanchez', 's1': 's.af', 's2': 'jjjjjjj', 'r': 'edt'}
         ]
     });
 
