@@ -3,8 +3,7 @@
 /**
  * Module dependencies.
  */
-var mongoose = require('mongoose'),
-    Dictionary = mongoose.model('Dictionary');
+var mongoose = require('mongoose')
     //async = require('async'),
    // config = require('meanio').loadConfig(),
    // templates = require('../template');
@@ -13,8 +12,7 @@ var mongoose = require('mongoose'),
 exports.add = function (req, res) {
 
 
-    var myRe = /\w+/;
-    var myArray = myRe.exec("John Smith");
+    var Dictionary = mongoose.model('Dictionary', 'cumed');
 
 //Preuba luego borrar todo esto
     var dictionary = new Dictionary({
@@ -25,7 +23,7 @@ exports.add = function (req, res) {
             {'b': 'T17a', 'c': ['v.2'], 't': '25'}
         ],
         v5: 'T',
-        v6: 'as',
+        v6: 'mc',
         v11: [
             {'_': 'Fidel Santana', 'r': 'edt'},
             {'_': 'Fernanadno Sanchez', 'r': 'edt'}
@@ -35,14 +33,44 @@ exports.add = function (req, res) {
             {'_': 'Fernanadno Sanchez', 'i': 'en'}
         ],
         v14: [
-            {'_': '[24543-3]','f': 5},
+            {'_': '[24543-3]', 'f': 5},
             {'_': '[1-3]', 'f': 1, 'l': 500}
         ],
         v16: [
             {'_': 'Fidel Santana', 's1': 'dasdfas', 's2': 'jjjjjjj', 'p': 'Iran', 'r': 'edt'},
             {'_': 'Fernanadno Sanchez', 's1': 's.af', 's2': 'jjjjjjj', 'r': 'edt'}
-        ]
+        ],
+        v18: [
+            {'_': 'Cólera: informe técnico', 'i': 'es'},
+            {'_': 'Simpósio de Plantas Medicinais no Brasil', 'i': 'pt'}
+        ],
+        v20: 'xvii,323',
+        v21: 'fasd',
+        v30: 'Esto es una prueba para de un titulo   ',
+        v35: '32rv4145',
+        v40: 'es',
+        v50: 'Universidad de Buenos Aires. Facultad de Medicina',
+        v51: 'Profesor titular',
+        v54: 'dfasdffasdfasd',
+        v55: '22345678',
+        v56: 'Evento en el Palacio',
+        v64: '516198191',
+        v65: '51619819',
+        v66: 'La Habana',
+        v83: [
+            {_: 'Sara', i: 'es'},
+            {_: 'rrett', i: 'es'}
+        ],
+        v87: [
+            {d: 'Sarampión', s: 'inmunol', 'k': 'kakakak'},
+            {d: 'Vacuna Antisarampión', s: 'inmunol'},
+            {d: 'Agua', s: 'anal'}
+        ],
+        v91: {_: 20060626, i: '14:04:18', f: '14:04:37', t: '0:04:37'},
+        v917: {_: 20060626, i: '14:04:18', f: '14:04:37', t: '0:04:37'}
+
     });
+
 
     dictionary.save(function (err) {
         if (err) {

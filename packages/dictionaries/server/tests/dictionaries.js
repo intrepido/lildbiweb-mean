@@ -36,7 +36,7 @@ describe('<Unit Test>', function () {
                         {'b': 'T17a', 'c': ['v.2'], 't': '25'}
                     ],
                     v5: 'T',
-                    v6: 'as',
+                    v6: 'mc',
                     v11: [
                         {'_': 'Fidel Santana', 'r': 'edt'},
                         {'_': 'Fernanadno Sanchez', 'r': 'edt'}
@@ -46,13 +46,42 @@ describe('<Unit Test>', function () {
                         {'_': 'Fernanadno Sanchez', 'i': 'en'}
                     ],
                     v14: [
-                        {'_': '[24543-3]','f': 5},
+                        {'_': '[24543-3]', 'f': 5},
                         {'_': '[1-3]', 'f': 1, 'l': 500}
                     ],
                     v16: [
                         {'_': 'Fidel Santana', 's1': 'dasdfas', 's2': 'jjjjjjj', 'p': 'Iran', 'r': 'edt'},
                         {'_': 'Fernanadno Sanchez', 's1': 's.af', 's2': 'jjjjjjj', 'r': 'edt'}
-                    ]
+                    ],
+                    v18: [
+                        {'_': 'Cólera: informe técnico', 'i': 'es'},
+                        {'_': 'Simpósio de Plantas Medicinais no Brasil', 'i': 'pt'}
+                    ],
+                    v20: 'xvii,323',
+                    v21: 'fasd',
+                    v30: 'Esto es una prueba para de un titulo   ',
+                    v35: '32rv4145',
+                    v40: 'es',
+                    v50: 'Universidad de Buenos Aires. Facultad de Medicina',
+                    v51: 'Profesor titular',
+                    v54: 'dfasdffasdfasd',
+                    v55: '22345678',
+                    v56: 'Evento en el Palacio',
+                    v64: '516198191',
+                    v65: '51619819',
+                    v66: 'La Habana',
+                    v83: [
+                        {_: 'SaraEstos aka aska slaksdjfa alaksjld alalkasdj flal alsjkdlkmpión', i: 'es'},
+                        {_: 'Sarampión', i: 'es'}
+                    ],
+                    v87: [
+                        {d: 'Sarampión', s: 'inmunol', 'k': 'kakakak'},
+                        {d: 'Vacuna Antisarampión', s: 'inmunol'},
+                        {d: 'Agua', s: 'anal'}
+                    ],
+                    v91: {_: 20060626, i: '14:04:18', f: '14:04:37', t: '0:04:37'},
+                    v917: {_: 20060626, i: '14:04:18', f: '14:04:37', t: '0:04:37'}
+
                 });
 
                 done();
