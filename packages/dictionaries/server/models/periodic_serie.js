@@ -19,30 +19,6 @@ var validate_v10_s1 = function (value) {
     return true
 };
 
-var validate_v16_s1 = function (value) {
-    if (value !== 's.af' && value) { //Si el subcampo s1 de v16, existe y tiene una afiliacion valida, entonces el subcampo p es obligatorio
-        if (!this.p)
-            return false;
-    }
-    return true
-};
-
-var validate_v23_s1 = function (value) {
-    if (value !== 's.af' && value) { //Si el subcampo s1 de v23, existe y tiene una afiliacion valida, entonces el subcampo p es obligatorio
-        if (!this.p)
-            return false;
-    }
-    return true
-};
-
-var validate_v49_s1 = function (value) {
-    if (value !== 's.af' && value) { //Si el subcampo s1 de v49, existe y tiene una afiliacion valida, entonces el subcampo p es obligatorio
-        if (!this.p)
-            return false;
-    }
-    return true
-};
-
 var validate_v35 = function (value) {
     return value.length <= 9;
 };
@@ -55,10 +31,6 @@ var validate_v65 = function (value) {
     return value.toString().length === 8;
 };
 
-var validate_v69 = function (value) {
-    return value.length <= 13;
-};
-
 var validate_v84 = function (value) {
     return value.toString().length === 8;
 };
@@ -66,31 +38,6 @@ var validate_v84 = function (value) {
 var validate_v83 = function (value) {
     return value.length <= 2000;
 };
-
-
-/*
- DictionarySchema.path('v10').validate(function(value) {
- return this.v10.length;
- },'the field v10 is already fully');*/
-/*
- DictionarySchema.path('v11').validate(function(value) {
- return !this.v10.length;
- },'the field v10 is already fully');
- */
-/*
- DictionarySchema.path('3').validate(function(value) {
- return value.length;
- },"'3' cannot be an empty array");*/
-
-
-/*
- DictionarySchema.path('title').validate(function(title) {
- return !!title;
- }, 'Title cannot be blank');
-
- DictionarySchema.path('content').validate(function(content) {
- return !!content;
- }, 'Content cannot be blank');*/
 
 
 /**
@@ -112,8 +59,6 @@ var responsibilityGrade = ['edt', 'com', 'coord', 'org']; //Codificador
 
 var idiomCode = ['en', 'es', 'pt', 'fr']; //Codificador
 
-var countryCode = ['BR', 'CO', 'CU', 'PR']; //Codificador
-
 var itemForm = ['a', 'b', 'c', 'd']; //Codificador
 
 var computerFileType = ['a', 'b', 'c', 'd']; //Codificador
@@ -129,7 +74,7 @@ var specificDesignationMaterial = ['c', 'd', 'e', 'f']; //Codificador
 /**
  * Dictionary Schema
  */
-var DictionarySchema = new Schema({
+var PeriodicSerieSchema = new Schema({
     v1: { // CÓDIGO DEL CENTRO
         type: String,
         required: true, //Es requerido porque es llenado automaticamente por el sistema (NOTA: Averiguar como el lildbiweb viejo obtenia este codigo)
@@ -162,12 +107,6 @@ var DictionarySchema = new Schema({
         enum: treatmentLevel,
         required: true //Es requerido porque es llenado automaticamente por el sistema
     },
-    v7: [ //NÚMERO DEL REGISTRO
-        {//número único secuencial atribuido al documento por la Institución Procesadora, de acuerdo con su entrada en la biblioteca
-            type: Number,
-            trim: true
-        }
-    ],
     v8: [ //DIRECCIÓN ELECTRÓNICA
         {
             _id: false,
@@ -267,114 +206,6 @@ var DictionarySchema = new Schema({
             }
         }
     ],
-    v16: [ //AUTOR PERSONAL (nivel monográfico)
-        {
-            _id: false,
-            _: String, //nombre de la persona responsable por el contenido intelectual de un documento
-            s1: { //afiliación
-                type: String,
-                validate: [validate_v16_s1, 'The country is obligatory when the affiliation was especificated in field v16']
-            },
-            s2: String, //afiliación
-            s3: String, //afiliación
-            p: String, //país (NOTA: Por que no tiene un codificador de pais en este subcampo?)
-            c: String, //ciudad
-            r: { //grado de responsabilidad
-                type: String,
-                enum: responsibilityGrade
-            }
-        }
-    ],
-    v17: [ //AUTOR INSTITUCIONAL (nivel monográfico)
-        {
-            _id: false,
-            _: String, //nombre de la institución responsable por el contenido intelectual de un documento
-            r: { //grado de responsabilidad
-                type: String,
-                enum: responsibilityGrade
-            }
-        }
-    ],
-    v18: [ //TÍTULO (nivel monográfico)
-        {
-            _id: false,
-            _: { //título del documento
-                type: String,
-                required: true,
-                lowercase: true
-            },
-            i: { //código del idioma
-                type: String,
-                enum: idiomCode,
-                required: true
-            }
-        }
-    ],
-    v19: { //TÍTULO TRADUCIDO AL INGLÉS (nivel monográfico)
-        type: String,
-        trim: true
-    },
-    v20: { //PÁGINAS (nivel monográfico)
-        type: String,
-        required: true,
-        trim: true
-    },
-    v21: { //VOLUMEN (nivel monográfico)
-        type: String,
-        trim: true
-    },
-    v23: [ //AUTOR PERSONAL (nivel colección)
-        {
-            _id: false,
-            _: String, //nombre de la persona responsable por el contenido intelectual de un documento
-            s1: { //afiliación
-                type: String,
-                validate: [validate_v23_s1, 'The country is obligatory when the affiliation was especificated in field v23']
-            },
-            s2: String, //afiliación
-            s3: String, //afiliación
-            p: String, //país (NOTA: Por que no tiene un codificador de pais en este subcampo?)
-            c: String, //ciudad
-            r: { //grado de responsabilidad
-
-                type: String,
-                enum: responsibilityGrade
-            }
-        }
-    ],
-    v24: [ //AUTOR INSTITUCIONAL (nivel colección)
-        {
-            _id: false,
-            _: String, //nombre de la institución responsable por el contenido intelectual de un documento
-            r: { //grado de responsabilidad
-                type: String,
-                enum: responsibilityGrade
-            }
-        }
-    ],
-    v25: [ //TÍTULO (nivel colección)
-        {
-            _id: false,
-            _: { //título del documento
-                type: String,
-                required: true,
-                lowercase: true
-            },
-            i: { //código del idioma
-                type: String,
-                enum: idiomCode,
-                required: true
-            }
-        }
-    ],
-    v26: { //TÍTULO TRADUCIDO PARA EL INGLÊS (nivel colección)
-        type: String,
-        trim: true
-    },
-    v27: { //NÚMERO TOTAL DE VOLÚMENES (nivel colección)
-        type: Number,
-        trim: true
-    },
     v30: [ //TÍTULO (nivel serie)
         {
             type: String,
@@ -421,30 +252,6 @@ var DictionarySchema = new Schema({
             enum: idiomCode
         }
     ],
-    v49: [ //TESIS, DISERTACIÓN - ORIENTADOR
-        {
-            _id: false,
-            _: String, //orientador
-            s1: { //afiliación
-                type: String,
-                validate: [validate_v49_s1, 'The country is obligatory when the affiliation was especificated in field v49']
-            },
-            s2: String, //afiliación
-            s3: String, //afiliación
-            p: String, //país (NOTA: Por que no tiene un codificador de pais en este subcampo?)
-            c: String //ciudad
-        }
-    ],
-    v50: { //TESIS, DISERTACIÓN - INSTITUCIÓN A LA CUAL SE PRESENTA
-        type: String,
-        trim: true,
-        required: true
-    },
-    v51: { //TESIS, DISERTACIÓN – TÍTULO ACADEMICO
-        type: String, //(tengo duda de si este campo es un enum o no)???????????
-        trim: true,
-        required: true
-    },
     v52: [ //EVENTO - INSTITUCIÓN PATROCINADORA
         {
             type: String, //es repetible???????????????
@@ -494,17 +301,6 @@ var DictionarySchema = new Schema({
         type: String,
         trim: true
     },
-    v62: [ //EDITORA
-        {
-            type: String,
-            trim: true,
-            required: true
-        }
-    ],
-    v63: { //EDICIÓN
-        type: String,
-        trim: true
-    },
     v64: { //FECHA DE PUBLICACIÓN
         type: String,
         trim: true,
@@ -513,26 +309,6 @@ var DictionarySchema = new Schema({
     v65: { //FECHA NORMALIZADA
         type: Number,
         validate: [validate_v65, 'The normalized date must have 8 characters exactly']
-    },
-    v66: { //CIUDAD DE PUBLICACIÓN
-        type: String,
-        trim: true,
-        required: true
-    },
-    v67: { //PAÍS DE PUBLICACIÓN
-        type: String,
-        enum: countryCode
-    },
-    v68: [ //SÍMBOLO
-        {
-            type: String,
-            trim: true
-        }
-    ],
-    v69: { //ISBN
-        type: String,
-        trim: true,
-        validate: [validate_v69, 'The ISBN dont must have more than 13 characters']
     },
     v71: [ //TIPO DE PUBLICACIÓN    ************//Utiliza el DeSC
         {
@@ -759,22 +535,6 @@ var DictionarySchema = new Schema({
             trim: true
         }
     ],
-    v700: [ //NOMBRE DEL REGISTRO DE ENSAYO CLÍNICO
-        {
-            _id: false,
-            _: { //nombre de la base de datos donde el documento fue registrado   //***** Es un enum????????
-                type: String
-            },
-            a: { //número del registro
-                type: String,
-                trim: true
-            },
-            u: { //url del registro
-                type: String,
-                trim: true
-            }
-        }
-    ],
     v724: { //NÚMERO DOI
         type: String,
         trim: true
@@ -787,31 +547,27 @@ var DictionarySchema = new Schema({
 }, { strict: false });
 
 
-DictionarySchema.path('v12').validate(function (value) {
+PeriodicSerieSchema.path('v12').validate(function (value) {
     return value.length ? true : false;
 }, 'The field "v12" is obligatory');
 
-DictionarySchema.path('v18').validate(function (value) {
-    return value.length ? true : false;
-}, 'The field "v18" is obligatory');
-
-DictionarySchema.path('v30').validate(function (value) {
+PeriodicSerieSchema.path('v30').validate(function (value) {
     return value.length ? true : false;
 }, 'The field "v30" is obligatory');
 
-DictionarySchema.path('v40').validate(function (value) {
+PeriodicSerieSchema.path('v40').validate(function (value) {
     return value.length ? true : false;
 }, 'The field "v40" is obligatory');
 
-DictionarySchema.path('v87').validate(function (value) {
+PeriodicSerieSchema.path('v87').validate(function (value) {
     return value.length ? true : false;
 }, 'The field "v87" is obligatory');
 
-DictionarySchema.path('v92').validate(function (value) {
+PeriodicSerieSchema.path('v92').validate(function (value) {
     return value.length ? true : false;
 }, 'The field "v92" is obligatory');
 
-DictionarySchema.path('v83').validate(function (value) {
+PeriodicSerieSchema.path('v83').validate(function (value) {
     var cant = 0;
     for (var i = 0; i < value.length; i++) {
         cant += value[i]._.length;
@@ -824,7 +580,7 @@ DictionarySchema.path('v83').validate(function (value) {
  * Pre-save hook
  */
 
-DictionarySchema.pre('validate', function (next) {
+PeriodicSerieSchema.pre('validate', function (next) {
     if (!this.v10.length && !this.v11.length) { //Si v10 y v11 no son llenados, entonces ponerle valor 'Anon' a v10
         this.v10.push({'_': 'Anon'});
     }
@@ -832,7 +588,7 @@ DictionarySchema.pre('validate', function (next) {
     next();
 });
 
-DictionarySchema.pre('save', function (next) { //Las reglas que se definen aqui, tienen que existir independientememte de si el campo al que se le aplica es llenado o no
+PeriodicSerieSchema.pre('save', function (next) { //Las reglas que se definen aqui, tienen que existir independientememte de si el campo al que se le aplica es llenado o no
 
     if (!this.v10.length && !this.v11.length) { //Si v10 y v11 no son llenados, entonces ponerle valor 'Anon' a v10
         this.v10.push({'_': 'Anon'});
@@ -842,55 +598,18 @@ DictionarySchema.pre('save', function (next) { //Las reglas que se definen aqui,
         this.v11.splice(0, this.v11.length);
     }
 
-    if (!this.v16.length && !this.v17.length) { //Si v16 y v17 no son llenados, entonces ponerle valor 'Anon' a v16
-        this.v16.push({'_': 'Anon'});
-    }
-
-    if (this.v16.length && this.v17.length) { //Si v16 y v17 son llenados, entonces solo dejar v16 con valor
-        this.v17.splice(0, this.v17.length);
-    }
-
-    if (!this.v23.length && !this.v24.length) { //Si v23 y v24 no son llenados, entonces ponerle valor 'Anon' a v23
-        this.v23.push({'_': 'Anon'});
-    }
-
-    if (this.v23.length && this.v24.length) { //Si v23 y v24 son llenados, entonces solo dejar v23 con valor
-        this.v24.splice(0, this.v24.length);
-    }
-
-    if (!this.v59 && !this.v60) { //Si v59 y v60 no son llenados, entonces no se indica que el documento forma parte de un proyecto.
-        //this.v10.push({'_': 'Anon'});
-    }
-
     if (this.v6 === 'as') { //Si v6 es una analitica de serie periodica entonces el campo s1 es obligatorio
         for (var i = 0; i < this.v10.length; i++) {
             if (!this.v10[i].s1)
                 return next(new Error('The affiliation is obligatory for analitics of periodic series in the field v10'));
         }
-        for (var i = 0; i < this.v16.length; i++) {
-            if (!this.v16[i].s1)
-                return next(new Error('The affiliation is obligatory for analitics of periodic series in the field v16'));
-        }
         for (var i = 0; i < this.v23.length; i++) {
             if (!this.v23[i].s1)
                 return next(new Error('The affiliation is obligatory for analitics of periodic series in the field v23'));
         }
-        for (var i = 0; i < this.v49.length; i++) {
-            if (!this.v49[i].s1)
-                return next(new Error('The affiliation is obligatory for analitics of periodic series in the field v49'));
-        }
     }
 
     if (this.v5 === 'T') { //Si v5 es una Tesis entonces los campos de afiliacion no deben ser llenados
-        for (var i = 0; i < this.v16.length; i++) {
-            delete this.v16[i]._doc.s1;
-            delete this.v16[i]._doc.s2;
-            delete this.v16[i]._doc.s3;
-            delete this.v16[i]._doc.p;
-            delete this.v16[i]._doc.c;
-            delete this.v16[i]._doc.r;
-        }
-
         for (var i = 0; i < this.v23.length; i++) {
             delete this.v23[i]._doc.s1;
             delete this.v23[i]._doc.s2;
@@ -899,11 +618,6 @@ DictionarySchema.pre('save', function (next) { //Las reglas que se definen aqui,
             delete this.v23[i]._doc.c;
             delete this.v23[i]._doc.r;
         }
-    }
-
-    if (this.v6 === 'mc' || this.v6 === 'amc') { //Si v6 es una monografia perteneciente a una colección, o una analítica perteneciente a una colección, entonces el campo s1 es obligatorio
-        if (!this.v21)
-            return next(new Error('The field "v21" must be obligatory if the level of treatment are "mc" or "amc"'));
     }
 
     if (this.v54) { //Si v54 existe y tiene valor "s.f", entonces v55 no debe existir
@@ -928,10 +642,6 @@ DictionarySchema.pre('save', function (next) { //Las reglas que se definen aqui,
         return next(new Error('The field "v75" must be bigger than "v74"'));
     }
 
-    /*if(!this.v52 && !this.v53 && !this.v54 && !this.v55 && !this.v56 && !this.v57){
-     delete this._doc.v101;
-     }*/
-
 
     next();
 });
@@ -941,10 +651,10 @@ DictionarySchema.pre('save', function (next) { //Las reglas que se definen aqui,
  * Statics
  */
 /*
- DictionarySchema.statics.load = function(id, cb) {
+ PeriodicSerieSchema.statics.load = function(id, cb) {
  this.findOne({
  _id: id
  }).populate('user', 'name username').exec(cb);
  };
  */
-mongoose.model('Dictionary', DictionarySchema);
+mongoose.model('PeriodicSerie', PeriodicSerieSchema);

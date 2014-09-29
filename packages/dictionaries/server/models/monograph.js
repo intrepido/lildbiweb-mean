@@ -35,18 +35,6 @@ var validate_v23_s1 = function (value) {
     return true
 };
 
-var validate_v49_s1 = function (value) {
-    if (value !== 's.af' && value) { //Si el subcampo s1 de v49, existe y tiene una afiliacion valida, entonces el subcampo p es obligatorio
-        if (!this.p)
-            return false;
-    }
-    return true
-};
-
-var validate_v35 = function (value) {
-    return value.length <= 9;
-};
-
 var validate_v55 = function (value) {
     return value.toString().length === 8;
 };
@@ -66,31 +54,6 @@ var validate_v84 = function (value) {
 var validate_v83 = function (value) {
     return value.length <= 2000;
 };
-
-
-/*
- DictionarySchema.path('v10').validate(function(value) {
- return this.v10.length;
- },'the field v10 is already fully');*/
-/*
- DictionarySchema.path('v11').validate(function(value) {
- return !this.v10.length;
- },'the field v10 is already fully');
- */
-/*
- DictionarySchema.path('3').validate(function(value) {
- return value.length;
- },"'3' cannot be an empty array");*/
-
-
-/*
- DictionarySchema.path('title').validate(function(title) {
- return !!title;
- }, 'Title cannot be blank');
-
- DictionarySchema.path('content').validate(function(content) {
- return !!content;
- }, 'Content cannot be blank');*/
 
 
 /**
@@ -127,9 +90,9 @@ var visualMaterialType = ['a', 'c', 'f', 'k']; //Codificador
 var specificDesignationMaterial = ['c', 'd', 'e', 'f']; //Codificador
 
 /**
- * Dictionary Schema
+ * Monograph Schema
  */
-var DictionarySchema = new Schema({
+var MonographSchema = new Schema({
     v1: { // CÓDIGO DEL CENTRO
         type: String,
         required: true, //Es requerido porque es llenado automaticamente por el sistema (NOTA: Averiguar como el lildbiweb viejo obtenia este codigo)
@@ -367,32 +330,9 @@ var DictionarySchema = new Schema({
             }
         }
     ],
-    v26: { //TÍTULO TRADUCIDO PARA EL INGLÊS (nivel colección)
-        type: String,
-        trim: true
-    },
     v27: { //NÚMERO TOTAL DE VOLÚMENES (nivel colección)
         type: Number,
         trim: true
-    },
-    v30: [ //TÍTULO (nivel serie)
-        {
-            type: String,
-            trim: true
-        }
-    ],
-    v31: { //VOLUMEN (nivel serie)
-        type: String,
-        trim: true
-    },
-    v32: { //NÚMERO DEL FASCICULO (nivel serie)
-        type: String,
-        trim: true
-    },
-    v35: { //ISSN
-        type: String,
-        trim: true,
-        validate: [validate_v35, 'The ISSN dont must have more than 9 characters']
     },
     v38: [ //INFORMACIÓN DESCRIPTIVA
         {
@@ -421,30 +361,6 @@ var DictionarySchema = new Schema({
             enum: idiomCode
         }
     ],
-    v49: [ //TESIS, DISERTACIÓN - ORIENTADOR
-        {
-            _id: false,
-            _: String, //orientador
-            s1: { //afiliación
-                type: String,
-                validate: [validate_v49_s1, 'The country is obligatory when the affiliation was especificated in field v49']
-            },
-            s2: String, //afiliación
-            s3: String, //afiliación
-            p: String, //país (NOTA: Por que no tiene un codificador de pais en este subcampo?)
-            c: String //ciudad
-        }
-    ],
-    v50: { //TESIS, DISERTACIÓN - INSTITUCIÓN A LA CUAL SE PRESENTA
-        type: String,
-        trim: true,
-        required: true
-    },
-    v51: { //TESIS, DISERTACIÓN – TÍTULO ACADEMICO
-        type: String, //(tengo duda de si este campo es un enum o no)???????????
-        trim: true,
-        required: true
-    },
     v52: [ //EVENTO - INSTITUCIÓN PATROCINADORA
         {
             type: String, //es repetible???????????????
@@ -759,22 +675,6 @@ var DictionarySchema = new Schema({
             trim: true
         }
     ],
-    v700: [ //NOMBRE DEL REGISTRO DE ENSAYO CLÍNICO
-        {
-            _id: false,
-            _: { //nombre de la base de datos donde el documento fue registrado   //***** Es un enum????????
-                type: String
-            },
-            a: { //número del registro
-                type: String,
-                trim: true
-            },
-            u: { //url del registro
-                type: String,
-                trim: true
-            }
-        }
-    ],
     v724: { //NÚMERO DOI
         type: String,
         trim: true
@@ -787,31 +687,27 @@ var DictionarySchema = new Schema({
 }, { strict: false });
 
 
-DictionarySchema.path('v12').validate(function (value) {
+MonographSchema.path('v12').validate(function (value) {
     return value.length ? true : false;
 }, 'The field "v12" is obligatory');
 
-DictionarySchema.path('v18').validate(function (value) {
+MonographSchema.path('v18').validate(function (value) {
     return value.length ? true : false;
 }, 'The field "v18" is obligatory');
 
-DictionarySchema.path('v30').validate(function (value) {
-    return value.length ? true : false;
-}, 'The field "v30" is obligatory');
-
-DictionarySchema.path('v40').validate(function (value) {
+MonographSchema.path('v40').validate(function (value) {
     return value.length ? true : false;
 }, 'The field "v40" is obligatory');
 
-DictionarySchema.path('v87').validate(function (value) {
+MonographSchema.path('v87').validate(function (value) {
     return value.length ? true : false;
 }, 'The field "v87" is obligatory');
 
-DictionarySchema.path('v92').validate(function (value) {
+MonographSchema.path('v92').validate(function (value) {
     return value.length ? true : false;
 }, 'The field "v92" is obligatory');
 
-DictionarySchema.path('v83').validate(function (value) {
+MonographSchema.path('v83').validate(function (value) {
     var cant = 0;
     for (var i = 0; i < value.length; i++) {
         cant += value[i]._.length;
@@ -824,15 +720,7 @@ DictionarySchema.path('v83').validate(function (value) {
  * Pre-save hook
  */
 
-DictionarySchema.pre('validate', function (next) {
-    if (!this.v10.length && !this.v11.length) { //Si v10 y v11 no son llenados, entonces ponerle valor 'Anon' a v10
-        this.v10.push({'_': 'Anon'});
-    }
-
-    next();
-});
-
-DictionarySchema.pre('save', function (next) { //Las reglas que se definen aqui, tienen que existir independientememte de si el campo al que se le aplica es llenado o no
+MonographSchema.pre('save', function (next) { //Las reglas que se definen aqui, tienen que existir independientememte de si el campo al que se le aplica es llenado o no
 
     if (!this.v10.length && !this.v11.length) { //Si v10 y v11 no son llenados, entonces ponerle valor 'Anon' a v10
         this.v10.push({'_': 'Anon'});
@@ -858,10 +746,6 @@ DictionarySchema.pre('save', function (next) { //Las reglas que se definen aqui,
         this.v24.splice(0, this.v24.length);
     }
 
-    if (!this.v59 && !this.v60) { //Si v59 y v60 no son llenados, entonces no se indica que el documento forma parte de un proyecto.
-        //this.v10.push({'_': 'Anon'});
-    }
-
     if (this.v6 === 'as') { //Si v6 es una analitica de serie periodica entonces el campo s1 es obligatorio
         for (var i = 0; i < this.v10.length; i++) {
             if (!this.v10[i].s1)
@@ -874,10 +758,6 @@ DictionarySchema.pre('save', function (next) { //Las reglas que se definen aqui,
         for (var i = 0; i < this.v23.length; i++) {
             if (!this.v23[i].s1)
                 return next(new Error('The affiliation is obligatory for analitics of periodic series in the field v23'));
-        }
-        for (var i = 0; i < this.v49.length; i++) {
-            if (!this.v49[i].s1)
-                return next(new Error('The affiliation is obligatory for analitics of periodic series in the field v49'));
         }
     }
 
@@ -928,10 +808,6 @@ DictionarySchema.pre('save', function (next) { //Las reglas que se definen aqui,
         return next(new Error('The field "v75" must be bigger than "v74"'));
     }
 
-    /*if(!this.v52 && !this.v53 && !this.v54 && !this.v55 && !this.v56 && !this.v57){
-     delete this._doc.v101;
-     }*/
-
 
     next();
 });
@@ -941,10 +817,10 @@ DictionarySchema.pre('save', function (next) { //Las reglas que se definen aqui,
  * Statics
  */
 /*
- DictionarySchema.statics.load = function(id, cb) {
+ MonographSchema.statics.load = function(id, cb) {
  this.findOne({
  _id: id
  }).populate('user', 'name username').exec(cb);
  };
  */
-mongoose.model('Dictionary', DictionarySchema);
+mongoose.model('Monograph', MonographSchema);

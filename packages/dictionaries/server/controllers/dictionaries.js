@@ -3,7 +3,7 @@
 /**
  * Module dependencies.
  */
-var mongoose = require('mongoose')
+var mongoose = require('mongoose');
     //async = require('async'),
    // config = require('meanio').loadConfig(),
    // templates = require('../template');

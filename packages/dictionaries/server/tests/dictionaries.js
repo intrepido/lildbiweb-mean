@@ -6,13 +6,15 @@
 var should = require('should'),
     mongoose = require('mongoose'),
     User = mongoose.model('User'),
-    Dictionary = mongoose.model('Dictionary');
+    Dictionary = mongoose.model('Dictionary'),
+    Monograph = mongoose.model('Monograph', 'cumed');
 
 /**
  * Globals
  */
 var user;
 var dictionary;
+var monograph;
 
 /**
  * Test Suites
@@ -28,7 +30,7 @@ describe('<Unit Test>', function () {
             });
 
             user.save(function () {
-                dictionary = new Dictionary({
+                monograph = new Monograph({
                     v1: 'BR1.1',
                     v3: [
                         {'_': 'BR1.1', 'a': '1.00', 'b': 'T17a', 'c': ['v.1', 'e.2'], 't': '1001'},
@@ -64,6 +66,7 @@ describe('<Unit Test>', function () {
                     v40: 'es',
                     v50: 'Universidad de Buenos Aires. Facultad de Medicina',
                     v51: 'Profesor titular',
+                    v53: ['prueba'],
                     v54: 'dfasdffasdfasd',
                     v55: '22345678',
                     v56: 'Evento en el Palacio',
@@ -74,12 +77,16 @@ describe('<Unit Test>', function () {
                         {_: 'SaraEstos aka aska slaksdjfa alaksjld alalkasdj flal alsjkdlkmpión', i: 'es'},
                         {_: 'Sarampión', i: 'es'}
                     ],
+                    v84: '20041217',
                     v87: [
                         {d: 'Sarampión', s: 'inmunol', 'k': 'kakakak'},
                         {d: 'Vacuna Antisarampión', s: 'inmunol'},
                         {d: 'Agua', s: 'anal'}
                     ],
                     v91: {_: 20060626, i: '14:04:18', f: '14:04:37', t: '0:04:37'},
+                    v92: 'SMY',
+                    v93: {_: 20060626, i: '14:04:18', f: '14:04:37', t: '0:04:37'},
+                    v98: 'BR1.1-131',
                     v917: {_: 20060626, i: '14:04:18', f: '14:04:37', t: '0:04:37'}
 
                 });
@@ -90,7 +97,7 @@ describe('<Unit Test>', function () {
 
         describe('Method Save', function () {
             it('should be able to save without problems', function (done) {
-                return dictionary.save(function (err) {
+                return monograph.save(function (err) {
                     should.not.exist(err);
                     //dictionary.v3[0].a.should.equal(1.00);
                     /*dictionary.title.should.equal('Dictionary Title');
