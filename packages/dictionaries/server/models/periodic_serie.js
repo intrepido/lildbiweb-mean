@@ -59,6 +59,8 @@ var responsibilityGrade = ['edt', 'com', 'coord', 'org']; //Codificador
 
 var idiomCode = ['en', 'es', 'pt', 'fr']; //Codificador
 
+var countryCode = ['BR', 'CO', 'CU', 'PR']; //Codificador
+
 var itemForm = ['a', 'b', 'c', 'd']; //Codificador
 
 var computerFileType = ['a', 'b', 'c', 'd']; //Codificador

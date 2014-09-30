@@ -16,7 +16,7 @@ var validate_v10_s1 = function (value) {
         if (!this.p)
             return false;
     }
-    return true
+    return true;
 };
 
 var validate_v16_s1 = function (value) {
@@ -24,7 +24,7 @@ var validate_v16_s1 = function (value) {
         if (!this.p)
             return false;
     }
-    return true
+    return true;
 };
 
 var validate_v23_s1 = function (value) {
@@ -32,7 +32,7 @@ var validate_v23_s1 = function (value) {
         if (!this.p)
             return false;
     }
-    return true
+    return true;
 };
 
 var validate_v49_s1 = function (value) {
@@ -40,7 +40,7 @@ var validate_v49_s1 = function (value) {
         if (!this.p)
             return false;
     }
-    return true
+    return true;
 };
 
 var validate_v35 = function (value) {

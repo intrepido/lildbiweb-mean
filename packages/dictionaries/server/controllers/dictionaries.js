@@ -12,10 +12,11 @@ var mongoose = require('mongoose');
 exports.add = function (req, res) {
 
 
-    var Dictionary = mongoose.model('Dictionary', 'cumed');
+    var Dictionary = mongoose.model('Dictionary'),
+    Monograph = mongoose.model('Monograph', 'cumed');
 
 //Preuba luego borrar todo esto
-    var dictionary = new Dictionary({
+    /*var dictionary = new Dictionary({
         v1: 'BR1.1',
         v3: [
             {'_': 'BR1.1', 'a': '1.00', 'b': 'T17a', 'c': ['v.1', 'e.2'], 't': '1001'},
@@ -69,10 +70,33 @@ exports.add = function (req, res) {
         v91: {_: 20060626, i: '14:04:18', f: '14:04:37', t: '0:04:37'},
         v917: {_: 20060626, i: '14:04:18', f: '14:04:37', t: '0:04:37'}
 
+    });*/
+
+    var monograph = new Monograph({
+        v1: 'BR1.1',
+        v5: 'MC',
+        v6: 'm',
+        v9: 'a',
+        v18: [
+            {'_': 'Cólera: informe técnico', 'i': 'es'},
+            {'_': 'Simpósio de Plantas Medicinais no Brasil', 'i': 'pt'}
+        ],
+        v20: 'xvii,323',
+        v40: 'es',
+        v62: ['Gente Nueva', 'Guama'],
+        v64: '516198191',
+        v66: 'La Habana',
+        v67: 'BR',
+        v84: '20041217',
+        v87: [
+            {d: 'Sarampión', s: 'inmunol', k: 'kakakak'},
+            {d: 'Vacuna Antisarampión', s: 'inmunol'},
+            {d: 'Agua', s: 'anal'}
+        ],
+        v92: 'FSM'
     });
 
-
-    dictionary.save(function (err) {
+    monograph.save(function (err) {
         if (err) {
             var modelErrors = [];
 
