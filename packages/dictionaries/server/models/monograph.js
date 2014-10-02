@@ -167,7 +167,8 @@ var MonographSchema = new Schema({
     ],
     v9: { //TIPO DE REGISTRO
         type: String,
-        enum: registerType
+        enum: registerType,
+        required: true
     },
     v10: [ //AUTOR PERSONAL (nivel analítico)
         {
@@ -376,8 +377,7 @@ var MonographSchema = new Schema({
     ],
     v54: { //EVENTO – FECHA
         type: String,
-        trim: true,
-        required: true
+        trim: true
     },
     v55: { //FECHA NORMALIZADA
         type: Number,
@@ -687,8 +687,23 @@ var MonographSchema = new Schema({
 }, { strict: false });
 
 
+
+MonographSchema.path('v5').validate(function (value) {
+    if(value === 'MC'){
+        if(!this.v54){
+            return false;
+        }
+    }
+    return true;
+}, 'The field "v54" is obligatory');
+
 MonographSchema.path('v12').validate(function (value) {
-    return value.length ? true : false;
+    if(this.v5 === ('M') && (this.v6 !== 'm' && this.v6 !== 'mc' && this.v6 !== 'c')){
+        if(!value.length){
+            return false;
+        }
+    }
+    return true;
 }, 'The field "v12" is obligatory');
 
 MonographSchema.path('v18').validate(function (value) {
@@ -699,13 +714,9 @@ MonographSchema.path('v40').validate(function (value) {
     return value.length ? true : false;
 }, 'The field "v40" is obligatory');
 
-MonographSchema.path('v87').validate(function (value) {
+MonographSchema.path('v62').validate(function (value) {
     return value.length ? true : false;
-}, 'The field "v87" is obligatory');
-
-MonographSchema.path('v92').validate(function (value) {
-    return value.length ? true : false;
-}, 'The field "v92" is obligatory');
+}, 'The field "v62" is obligatory');
 
 MonographSchema.path('v83').validate(function (value) {
     var cant = 0;
@@ -714,6 +725,16 @@ MonographSchema.path('v83').validate(function (value) {
     }
     return cant <= 6000 ? true : false;
 }, 'The summary dont must have more than 6000 characters in total');
+
+MonographSchema.path('v87').validate(function (value) {
+    return value.length ? true : false;
+}, 'The field "v87" is obligatory');
+
+MonographSchema.path('v92').validate(function (value) {
+    return value.length ? true : false;
+}, 'The field "v92" is obligatory');
+
+
 
 
 /**
@@ -806,6 +827,18 @@ MonographSchema.pre('save', function (next) { //Las reglas que se definen aqui, 
 
     if (this.v75 < this.v74) {
         return next(new Error('The field "v75" must be bigger than "v74"'));
+    }
+
+    if(this.v64){
+        if(!this.v65){
+            return next(new Error('The field "v65" must exist because the field "v64" exist'));
+        } 
+    }
+
+    if(this.v66){
+        if(!this.v67){
+            return next(new Error('The field "v67" must exist because the field "v66" exist'));
+        } 
     }
 
 
