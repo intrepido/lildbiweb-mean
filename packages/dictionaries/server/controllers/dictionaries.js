@@ -73,9 +73,16 @@ exports.add = function (req, res) {
     });*/
 
     var monograph = new Monograph({
-        v1: 'BR1.1',
-        v5: 'MC',
-        v6: 'm',
+        v1: 'BR1.1', //(LLenado automatico)
+        v4: 'CUMED', //(LLenado automatico)
+        v5: 'MC', //(LLenado automatico)
+        v6: 'm', //(LLenado automatico)
+        v84: '20041217', //(LLenado automatico)
+        v91: {_: 20060626, i: '14:04:18', f: '14:04:37', t: '0:04:37'}, //(LLenado automatico)
+        v92: 'FSM', //(LLenado automatico)
+        v93: {_: 20060626, i: '14:04:18', f: '14:04:37', t: '0:04:37'}, //(LLenado automatico)
+        v98: 'FONTE', //(LLenado automatico
+        v899: 'LILDBIWEB-1.8', //(LLenado automatico)
         v9: 'a',
         v18: [
             {'_': 'Cólera: informe técnico', 'i': 'es'},
@@ -84,16 +91,21 @@ exports.add = function (req, res) {
         v20: 'xvii,323',
         v40: 'es',
         v62: ['Gente Nueva', 'Guama'],
-        v64: '516198191',
+        v64: 'ago.-oct. 1991',
+        v65: '51619819',
         v66: 'La Habana',
         v67: 'BR',
-        v84: '20041217',
         v87: [
             {d: 'Sarampión', s: 'inmunol', k: 'kakakak'},
             {d: 'Vacuna Antisarampión', s: 'inmunol'},
             {d: 'Agua', s: 'anal'}
         ],
-        v92: 'FSM'
+        v53: 'GGGGGGG',
+        v54: 'dfasdffasdfasd',
+        v56: 'Evento en el Palacio',
+        v55: '22345678'
+
+
     });
 
     monograph.save(function (err) {
@@ -118,7 +130,7 @@ exports.add = function (req, res) {
             return res.status(400);
         }
 
-        res.json(dictionary);
+        res.json(monograph);
     });
 
 };

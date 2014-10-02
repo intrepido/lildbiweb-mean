@@ -3,12 +3,48 @@
 /**
  * Module dependencies.
  */
+
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
 
 /**
- * Validations
+ * Enumerators.
+ */
+
+var literatureTypes = ['S', 'SC', 'SCP', 'SP', 'M', 'MC', 'MCP', 'MP', 'MS', 'MSC', 'MSP', 'T', 'TS', 'N', 'NC', 'NP'];
+
+var treatmentLevel = ['m', 'mc', 'ms', 'am', 'amc', 'ams', 'as', 'c'];
+
+var languagueCode = ['es', 'en']; //Codificador
+
+var fileExtension = ['css', 'cmp']; //Codificador
+
+var fileType = ['css', 'cmp']; //Codificador
+
+var registerType = ['a', 'c', 'd']; //Codificador
+
+var responsibilityGrade = ['edt', 'com', 'coord', 'org']; //Codificador
+
+var idiomCode = ['en', 'es', 'pt', 'fr']; //Codificador
+
+var countryCode = ['BR', 'CO', 'CU', 'PR']; //Codificador
+
+var itemForm = ['a', 'b', 'c', 'd']; //Codificador
+
+var computerFileType = ['a', 'b', 'c', 'd']; //Codificador
+
+var cartographicTypeMaterial = ['a', 'b', 'c', 'd']; //Codificador
+
+var newspaperType = ['l', 'n', 'p', 'u']; //Codificador
+
+var visualMaterialType = ['a', 'c', 'f', 'k']; //Codificador
+
+var specificDesignationMaterial = ['c', 'd', 'e', 'f']; //Codificador
+
+
+/**
+ * Validations Squema Level (Simple)
  */
 
 var validate_v10_s1 = function (value) {
@@ -48,7 +84,7 @@ var validate_v69 = function (value) {
 };
 
 var validate_v84 = function (value) {
-    return value.toString().length === 8;
+    return (value && value.toString().length) === 8;
 };
 
 var validate_v83 = function (value) {
@@ -57,43 +93,11 @@ var validate_v83 = function (value) {
 
 
 /**
- * Enumerators.
- */
-var literatureTypes = ['S', 'SC', 'SCP', 'SP', 'M', 'MC', 'MCP', 'MP', 'MS', 'MSC', 'MSP', 'T', 'TS', 'N', 'NC', 'NP'];
-
-var treatmentLevel = ['m', 'mc', 'ms', 'am', 'amc', 'ams', 'as', 'c'];
-
-var languagueCode = ['es', 'en']; //Codificador
-
-var fileExtension = ['css', 'cmp']; //Codificador
-
-var fileType = ['css', 'cmp']; //Codificador
-
-var registerType = ['a', 'c', 'd']; //Codificador
-
-var responsibilityGrade = ['edt', 'com', 'coord', 'org']; //Codificador
-
-var idiomCode = ['en', 'es', 'pt', 'fr']; //Codificador
-
-var countryCode = ['BR', 'CO', 'CU', 'PR']; //Codificador
-
-var itemForm = ['a', 'b', 'c', 'd']; //Codificador
-
-var computerFileType = ['a', 'b', 'c', 'd']; //Codificador
-
-var cartographicTypeMaterial = ['a', 'b', 'c', 'd']; //Codificador
-
-var newspaperType = ['l', 'n', 'p', 'u']; //Codificador
-
-var visualMaterialType = ['a', 'c', 'f', 'k']; //Codificador
-
-var specificDesignationMaterial = ['c', 'd', 'e', 'f']; //Codificador
-
-/**
  * Monograph Schema
  */
+
 var MonographSchema = new Schema({
-    v1: { // CÓDIGO DEL CENTRO
+    v1: { // CÓDIGO DEL CENTRO (LLenado automatico)
         type: String,
         required: true, //Es requerido porque es llenado automaticamente por el sistema (NOTA: Averiguar como el lildbiweb viejo obtenia este codigo)
         trim: true
@@ -115,12 +119,12 @@ var MonographSchema = new Schema({
             required: true
         }
     ],
-    v5: { //TIPO DE LITERATURA
+    v5: { //TIPO DE LITERATURA  (LLenado automatico)
         type: String,
         enum: literatureTypes,
         required: true //Es requerido porque es llenado automaticamente por el sistema
     },
-    v6: { //NIVEL DE TRATAMIENTO
+    v6: { //NIVEL DE TRATAMIENTO   (LLenado automatico)
         type: String,
         enum: treatmentLevel,
         required: true //Es requerido porque es llenado automaticamente por el sistema
@@ -280,7 +284,6 @@ var MonographSchema = new Schema({
     },
     v20: { //PÁGINAS (nivel monográfico)
         type: String,
-        required: true,
         trim: true
     },
     v21: { //VOLUMEN (nivel monográfico)
@@ -385,8 +388,7 @@ var MonographSchema = new Schema({
     },
     v56: { //EVENTO – CIUDAD
         type: String,
-        trim: true,
-        required: true
+        trim: true
     },
     v57: { //EVENTO – PAÍS
         type: String,
@@ -496,7 +498,7 @@ var MonographSchema = new Schema({
             }
         }
     ],
-    v84: { //FECHA DE TRANSFERENCIA PARA LA BASE DE DATOS
+    v84: { //FECHA DE TRANSFERENCIA PARA LA BASE DE DATOS   (LLenado automatico)
         type: Number,
         trim: true,
         validate: [validate_v84, 'The transfered date to database must have 8 characters exactly'],
@@ -542,7 +544,7 @@ var MonographSchema = new Schema({
             }
         }
     ],
-    v91: {  //FECHA DE CREACIÓN DEL REGISTRO
+    v91: {  //FECHA DE CREACIÓN DEL REGISTRO   (LLenado automatico)
         _: { //fecha en formato ISO 8601:1988
             type: Number,
             required: true
@@ -566,13 +568,13 @@ var MonographSchema = new Schema({
             required: true
         }
     },
-    v92: [ //DOCUMENTALISTA
+    v92: [ //DOCUMENTALISTA   (LLenado automatico)
         {
             type: String,
             trim: true
         }
     ],
-    v93: {  //FECHA DE LA ÚLTIMA MODIFICACIÓN
+    v93: {  //FECHA DE LA ÚLTIMA MODIFICACIÓN   (LLenado automatico)
         _: { //fecha en formato ISO 8601:1988
             type: Number,
             required: true
@@ -596,7 +598,7 @@ var MonographSchema = new Schema({
             required: true
         }
     },
-    v98: { //REGISTRO COMPLEMENTARIO (MONOGRAFIA, NO CONVENCIONAL, COLECCIÓN, SERIE O TESIS, DISERTACIÓN)
+    v98: { //REGISTRO COMPLEMENTARIO (MONOGRAFIA, NO CONVENCIONAL, COLECCIÓN, SERIE O TESIS, DISERTACIÓN)   (LLenado automatico)
         type: String,
         trim: true,
         required: true
@@ -679,44 +681,50 @@ var MonographSchema = new Schema({
         type: String,
         trim: true
     },
-    v899: { //VERSIÓN DEL SOFTWARE
+    v899: { //VERSIÓN DEL SOFTWARE   (LLenado automatico)
         type: String,
-        trim: true
+        trim: true,
+        required: true
     }
 
 }, { strict: false });
 
 
+/**
+ * Validations Document Level (Advanced)
+ */
 
-MonographSchema.path('v5').validate(function (value) {
-    if(value === 'MC'){
-        if(!this.v54){
-            return false;
-        }
-    }
-    return true;
-}, 'The field "v54" is obligatory');
+//**************** Validation for level of treatment (v6) for type of literature (v5) Monograph *****************/
 
 MonographSchema.path('v12').validate(function (value) {
-    if(this.v5 === ('M') && (this.v6 !== 'm' && this.v6 !== 'mc' && this.v6 !== 'c')){
-        if(!value.length){
+    if (this.v5 === ('M') && (this.v6 === 'am' || this.v6 === 'amc')) {
+        if (!value.length) {
             return false;
         }
     }
     return true;
 }, 'The field "v12" is obligatory');
 
+MonographSchema.path('v25').validate(function (value) {
+    if (this.v5 === ('M') && (this.v6 === 'amc' || this.v6 === 'mc' || this.v6 === 'c')) {
+        if (!value.length) {
+            return false;
+        }
+    }
+    return true;
+}, 'The field "v25" is obligatory');
+
 MonographSchema.path('v18').validate(function (value) {
-    return value.length ? true : false;
+    if (this.v5 === ('M') && (this.v6 === 'am' || this.v6 === 'amc' || this.v6 === 'm' || this.v6 === 'mc')) {
+        if (!value.length) {
+            return false;
+        }
+    }
+    return true;
 }, 'The field "v18" is obligatory');
 
-MonographSchema.path('v40').validate(function (value) {
-    return value.length ? true : false;
-}, 'The field "v40" is obligatory');
 
-MonographSchema.path('v62').validate(function (value) {
-    return value.length ? true : false;
-}, 'The field "v62" is obligatory');
+//**************** Others Validations *****************/
 
 MonographSchema.path('v83').validate(function (value) {
     var cant = 0;
@@ -734,116 +742,174 @@ MonographSchema.path('v92').validate(function (value) {
     return value.length ? true : false;
 }, 'The field "v92" is obligatory');
 
+MonographSchema.path('v4').validate(function (value) {
+    return value.length ? true : false;
+}, 'The field "v4" is obligatory');
 
+MonographSchema.path('v40').validate(function (value) {
+    return value.length ? true : false;
+}, 'The field "v40" is obligatory');
+
+MonographSchema.path('v62').validate(function (value) {
+    return value.length ? true : false;
+}, 'The field "v62" is obligatory');
 
 
 /**
- * Pre-save hook
+ * Pre-save hook (More Advanced Validations)
  */
 
-MonographSchema.pre('save', function (next) { //Las reglas que se definen aqui, tienen que existir independientememte de si el campo al que se le aplica es llenado o no
+MonographSchema.pre('save', function (next) { //
 
-    if (!this.v10.length && !this.v11.length) { //Si v10 y v11 no son llenados, entonces ponerle valor 'Anon' a v10
-        this.v10.push({'_': 'Anon'});
-    }
+//**************** Validations for Level of treatment (v5) in combination with Project (P) and Conference (C) *****************/
+        if (this.v5) {
+            if (this.v5 === 'MC' || this.v5 === 'MCP') {//Si es una Conferencia o Evento (C)
+                if (!this.v53.length) {
+                    next(new Error('The field "v53" is obligatory'));
+                }
+                if (!this.v54) {
+                    next(new Error('The field "v54" is obligatory'));
+                }
+                if (!this.v56) {
+                    next(new Error('The field "v56" is obligatory'));
+                }
+            }else{//Si no es una Conferencia o Evento (C)
+                delete this._doc.v52;
+                delete this._doc.v53;
+                delete this._doc.v54;
+                delete this._doc.v55;
+                delete this._doc.v56;
+            }
 
-    if (this.v10.length && this.v11.length) { //Si v10 y v11 son llenados, entonces solo dejar v10 con valor
-        this.v11.splice(0, this.v11.length);
-    }
+            if(this.v5 !== 'MP' && this.v5 !== 'MCP'){ //Si no es un Proyecto (P)
+                delete this._doc.v58;
+                delete this._doc.v59;
+                delete this._doc.v60;
+            }
 
-    if (!this.v16.length && !this.v17.length) { //Si v16 y v17 no son llenados, entonces ponerle valor 'Anon' a v16
-        this.v16.push({'_': 'Anon'});
-    }
+            if(this.v5 !== 'MP' && this.v5 !== 'MC' && this.v5 !== 'MCP'){
+                delete this._doc.v101;
+                delete this._doc.v102;
+            }
 
-    if (this.v16.length && this.v17.length) { //Si v16 y v17 son llenados, entonces solo dejar v16 con valor
-        this.v17.splice(0, this.v17.length);
-    }
+            if (this.v5 === 'T') { //Si v5 es una Tesis entonces los campos de afiliacion no deben ser llenados
+                for (var i = 0; i < this.v16.length; i++) {
+                    delete this.v16[i]._doc.s1;
+                    delete this.v16[i]._doc.s2;
+                    delete this.v16[i]._doc.s3;
+                    delete this.v16[i]._doc.p;
+                    delete this.v16[i]._doc.c;
+                    delete this.v16[i]._doc.r;
+                }
 
-    if (!this.v23.length && !this.v24.length) { //Si v23 y v24 no son llenados, entonces ponerle valor 'Anon' a v23
-        this.v23.push({'_': 'Anon'});
-    }
-
-    if (this.v23.length && this.v24.length) { //Si v23 y v24 son llenados, entonces solo dejar v23 con valor
-        this.v24.splice(0, this.v24.length);
-    }
-
-    if (this.v6 === 'as') { //Si v6 es una analitica de serie periodica entonces el campo s1 es obligatorio
-        for (var i = 0; i < this.v10.length; i++) {
-            if (!this.v10[i].s1)
-                return next(new Error('The affiliation is obligatory for analitics of periodic series in the field v10'));
+                for (var i = 0; i < this.v23.length; i++) {
+                    delete this.v23[i]._doc.s1;
+                    delete this.v23[i]._doc.s2;
+                    delete this.v23[i]._doc.s3;
+                    delete this.v23[i]._doc.p;
+                    delete this.v23[i]._doc.c;
+                    delete this.v23[i]._doc.r;
+                }
+            }
         }
-        for (var i = 0; i < this.v16.length; i++) {
-            if (!this.v16[i].s1)
-                return next(new Error('The affiliation is obligatory for analitics of periodic series in the field v16'));
-        }
-        for (var i = 0; i < this.v23.length; i++) {
-            if (!this.v23[i].s1)
-                return next(new Error('The affiliation is obligatory for analitics of periodic series in the field v23'));
-        }
-    }
 
-    if (this.v5 === 'T') { //Si v5 es una Tesis entonces los campos de afiliacion no deben ser llenados
-        for (var i = 0; i < this.v16.length; i++) {
-            delete this.v16[i]._doc.s1;
-            delete this.v16[i]._doc.s2;
-            delete this.v16[i]._doc.s3;
-            delete this.v16[i]._doc.p;
-            delete this.v16[i]._doc.c;
-            delete this.v16[i]._doc.r;
+        if (this.v6) {
+            if (this.v6 === 'as') { //Si v6 es una analitica de serie periodica entonces el campo s1 es obligatorio
+                for (var i = 0; i < this.v10.length; i++) {
+                    if (!this.v10[i].s1)
+                        return next(new Error('The affiliation is obligatory for analitics of periodic series in the field v10'));
+                }
+                for (var i = 0; i < this.v16.length; i++) {
+                    if (!this.v16[i].s1)
+                        return next(new Error('The affiliation is obligatory for analitics of periodic series in the field v16'));
+                }
+                for (var i = 0; i < this.v23.length; i++) {
+                    if (!this.v23[i].s1)
+                        return next(new Error('The affiliation is obligatory for analitics of periodic series in the field v23'));
+                }
+            }
+            if (this.v6 === 'mc' || this.v6 === 'amc') { //Si v6 es una monografia perteneciente a una colección, o una analítica perteneciente a una colección, entonces el campo s1 es obligatorio
+                if (!this.v21)
+                    return next(new Error('The field "v21" must be obligatory if the level of treatment are "mc" or "amc"'));
+            }
         }
 
-        for (var i = 0; i < this.v23.length; i++) {
-            delete this.v23[i]._doc.s1;
-            delete this.v23[i]._doc.s2;
-            delete this.v23[i]._doc.s3;
-            delete this.v23[i]._doc.p;
-            delete this.v23[i]._doc.c;
-            delete this.v23[i]._doc.r;
+//**************** Others Validations *****************/
+
+        if (!this.v10.length && !this.v11.length) { //Si v10 y v11 no son llenados, entonces ponerle valor 'Anon' a v10
+            this.v10.push({'_': 'Anon'});
         }
-    }
 
-    if (this.v6 === 'mc' || this.v6 === 'amc') { //Si v6 es una monografia perteneciente a una colección, o una analítica perteneciente a una colección, entonces el campo s1 es obligatorio
-        if (!this.v21)
-            return next(new Error('The field "v21" must be obligatory if the level of treatment are "mc" or "amc"'));
-    }
-
-    if (this.v54) { //Si v54 existe y tiene valor "s.f", entonces v55 no debe existir
-        if (this.v54 === 's.f') {
-            delete this._doc.v55;
-        } else {
-            if (!this.v55)
-                return next(new Error('The field "v55" must exist because the field "v54" exist'));
+        if (this.v10.length && this.v11.length) { //Si v10 y v11 son llenados, entonces solo dejar v10 con valor
+            this.v11.splice(0, this.v11.length);
         }
-    }
 
-    if (this.v64) { //Si v64 existe y tiene valor "s.f", entonces v65 no debe existir
-        if (this.v64 === 's.f') {
-            delete this._doc.v65;
-        } else {
-            if (!this.v65)
+        if (!this.v16.length && !this.v17.length) { //Si v16 y v17 no son llenados, entonces ponerle valor 'Anon' a v16
+            this.v16.push({'_': 'Anon'});
+        }
+
+        if (this.v16.length && this.v17.length) { //Si v16 y v17 son llenados, entonces solo dejar v16 con valor
+            this.v17.splice(0, this.v17.length);
+        }
+
+        if (!this.v23.length && !this.v24.length) { //Si v23 y v24 no son llenados, entonces ponerle valor 'Anon' a v23
+            this.v23.push({'_': 'Anon'});
+        }
+
+        if (this.v23.length && this.v24.length) { //Si v23 y v24 son llenados, entonces solo dejar v23 con valor
+            this.v24.splice(0, this.v24.length);
+        }
+
+        if (this.v54) { //Si v54 existe y tiene valor "s.f", entonces v55 no debe existir
+            if (this.v54 === 's.f') {
+                delete this._doc.v55;
+            } else {
+                if (!this.v55)
+                    return next(new Error('The field "v55" must exist because the field "v54" exist'));
+            }
+        }
+
+        if (this.v64) { //Si v64 existe y tiene valor "s.f", entonces v65 no debe existir
+            if (this.v64 === 's.f') {
+                delete this._doc.v65;
+            } else {
+                if (!this.v65)
+                    return next(new Error('The field "v65" must exist because the field "v64" exist'));
+            }
+        }
+
+        if (this.v75 < this.v74) {
+            return next(new Error('The field "v75" must be bigger than "v74"'));
+        }
+
+        if (this.v64) {
+            if (!this.v65) {
                 return next(new Error('The field "v65" must exist because the field "v64" exist'));
+            }
         }
+
+        if (this.v66) {
+            if (!this.v67) {
+                return next(new Error('The field "v67" must exist because the field "v66" exist'));
+            }
+        }
+
+
+        //***************** Clean empty arrays ************************
+
+        for (var obj in this._doc) {
+            if (Array.isArray(this._doc[obj])) {
+                if (!this._doc[obj].length) {
+                    delete this._doc[obj];
+                }
+            }
+        }
+
+
+        next();
     }
-
-    if (this.v75 < this.v74) {
-        return next(new Error('The field "v75" must be bigger than "v74"'));
-    }
-
-    if(this.v64){
-        if(!this.v65){
-            return next(new Error('The field "v65" must exist because the field "v64" exist'));
-        } 
-    }
-
-    if(this.v66){
-        if(!this.v67){
-            return next(new Error('The field "v67" must exist because the field "v66" exist'));
-        } 
-    }
-
-
-    next();
-});
+)
+;
 
 
 /**
