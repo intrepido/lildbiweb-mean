@@ -75,7 +75,7 @@ exports.add = function (req, res) {
     var monograph = new Monograph({
         v1: 'BR1.1', //(LLenado automatico)
         v4: 'CUMED', //(LLenado automatico)
-        v5: 'MC', //(LLenado automatico)
+        v5: 'M', //(LLenado automatico)
         v6: 'm', //(LLenado automatico)
         v84: '20041217', //(LLenado automatico)
         v91: {_: 20060626, i: '14:04:18', f: '14:04:37', t: '0:04:37'}, //(LLenado automatico)
@@ -84,28 +84,26 @@ exports.add = function (req, res) {
         v98: 'FONTE', //(LLenado automatico
         v899: 'LILDBIWEB-1.8', //(LLenado automatico)
         v9: 'a',
+        v16: [
+            {'_': 'Fidel, Santana', 's1': 'dsfasdfa', 's2': 'jjjjjjj', 'p': 'Iran', 'r': 'edt'}
+        ],
         v18: [
             {'_': 'Cólera: informe técnico', 'i': 'es'},
             {'_': 'Simpósio de Plantas Medicinais no Brasil', 'i': 'pt'}
         ],
+        v19: 'Cholera: Inform technical',
         v20: 'xvii,323',
         v40: 'es',
         v62: ['Gente Nueva', 'Guama'],
         v64: 'ago.-oct. 1991',
         v65: '51619819',
         v66: 'La Habana',
-        v67: 'BR',
+        v67: 'CU',
         v87: [
             {d: 'Sarampión', s: 'inmunol', k: 'kakakak'},
             {d: 'Vacuna Antisarampión', s: 'inmunol'},
             {d: 'Agua', s: 'anal'}
-        ],
-        v53: 'GGGGGGG',
-        v54: 'dfasdffasdfasd',
-        v56: 'Evento en el Palacio',
-        v55: '22345678'
-
-
+        ]
     });
 
     monograph.save(function (err) {

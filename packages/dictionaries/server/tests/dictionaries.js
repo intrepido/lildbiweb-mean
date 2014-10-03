@@ -126,6 +126,10 @@ describe('<Unit Test>', function () {
                         {d: 'Sarampión', s: 'inmunol', k: 'kakakak'},
                         {d: 'Vacuna Antisarampión', s: 'inmunol'},
                         {d: 'Agua', s: 'anal'}
+                    ],
+                    v14: [
+                        {'_': '[24543-3]', 'f': 5},
+                        {'_': '[1-3]', 'f': 1, 'l': 500}
                     ]
                 });
 

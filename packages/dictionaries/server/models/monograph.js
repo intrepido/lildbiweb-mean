@@ -699,6 +699,34 @@ var MonographSchema = new Schema({
 
 }, { strict: false });
 
+/**
+ * Pre-validate hook (More Advanced Validations)
+ */
+
+
+MonographSchema.pre('validate', function(next) {
+    //console.log('Antes: ' + JSON.stringify(this));
+    //Elimino los campos que no pertenescan a los niveles de tratamiento correspondientes, para una Monografia.
+    if (this.v5 === 'M') {
+        if(this.v6 === 'mc' || this.v6 === 'c' || this.v6 === 'm'){
+            delete this._doc.v10;
+            delete this._doc.v11;
+            delete this._doc.v12;
+            delete this._doc.v13;
+            delete this._doc.v14;
+        }
+        if (this.v6 === 'am' || this.v6 === 'm') {
+            delete this._doc.v23;
+            delete this._doc.v24;
+            delete this._doc.v25;
+            delete this._doc.v27;
+        }
+    }
+
+
+    next();
+});
+
 
 /**
  * Validations Document Level (Advanced)
