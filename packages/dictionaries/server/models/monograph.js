@@ -20,7 +20,7 @@ var languagueCode = ['es', 'en']; //Codificador
 
 var fileExtension = ['css', 'cmp']; //Codificador
 
-var fileType = ['css', 'cmp']; //Codificador
+var fileType = ['AUDIO', 'BASE DE DADOS', 'COMPACTADO']; //Codificador
 
 var registerType = ['a', 'c', 'd']; //Codificador
 
@@ -50,6 +50,14 @@ var specificDesignationMaterial = ['c', 'd', 'e', 'f']; //Codificador
 var validate_v10_s1 = function (value) {
     if (value !== 's.af' && value) { //Si el subcampo s1 de v10, existe y tiene una afiliacion valida, entonces el subcampo p es obligatorio
         if (!this.p)
+            return false;
+    }
+    return true
+};
+
+var validate_v16__ = function (value) {
+    if (value !== 'Anon' && value) { //Si el subcampo _ de v16, existe y no es 'Anon'
+        if (!value.match(/.,./)) //Si el subcampo _ de v16 no contiene coma
             return false;
     }
     return true
@@ -238,7 +246,10 @@ var MonographSchema = new Schema({
     v16: [ //AUTOR PERSONAL (nivel monográfico)
         {
             _id: false,
-            _: String, //nombre de la persona responsable por el contenido intelectual de un documento
+            _: { //nombre de la persona responsable por el contenido intelectual de un documento
+                type: String,
+                validate: [validate_v16__, 'The name has no comma']
+            },
             s1: { //afiliación
                 type: String,
                 validate: [validate_v16_s1, 'The country is obligatory when the affiliation was especificated in field v16']
@@ -268,8 +279,7 @@ var MonographSchema = new Schema({
             _id: false,
             _: { //título del documento
                 type: String,
-                required: true,
-                lowercase: true
+                required: true
             },
             i: { //código del idioma
                 type: String,
@@ -773,7 +783,7 @@ MonographSchema.pre('save', function (next) { //
                 if (!this.v56) {
                     next(new Error('The field "v56" is obligatory'));
                 }
-            }else{//Si no es una Conferencia o Evento (C)
+            } else {//Si no es una Conferencia o Evento (C)
                 delete this._doc.v52;
                 delete this._doc.v53;
                 delete this._doc.v54;
@@ -781,67 +791,39 @@ MonographSchema.pre('save', function (next) { //
                 delete this._doc.v56;
             }
 
-            if(this.v5 !== 'MP' && this.v5 !== 'MCP'){ //Si no es un Proyecto (P)
+            if (this.v5 !== 'MP' && this.v5 !== 'MCP') { //Si no es un Proyecto (P)
                 delete this._doc.v58;
                 delete this._doc.v59;
                 delete this._doc.v60;
             }
 
-            if(this.v5 !== 'MP' && this.v5 !== 'MC' && this.v5 !== 'MCP'){
+            if (this.v5 !== 'MP' && this.v5 !== 'MC' && this.v5 !== 'MCP') {
                 delete this._doc.v101;
                 delete this._doc.v102;
             }
-
-            if (this.v5 === 'T') { //Si v5 es una Tesis entonces los campos de afiliacion no deben ser llenados
-                for (var i = 0; i < this.v16.length; i++) {
-                    delete this.v16[i]._doc.s1;
-                    delete this.v16[i]._doc.s2;
-                    delete this.v16[i]._doc.s3;
-                    delete this.v16[i]._doc.p;
-                    delete this.v16[i]._doc.c;
-                    delete this.v16[i]._doc.r;
-                }
-
-                for (var i = 0; i < this.v23.length; i++) {
-                    delete this.v23[i]._doc.s1;
-                    delete this.v23[i]._doc.s2;
-                    delete this.v23[i]._doc.s3;
-                    delete this.v23[i]._doc.p;
-                    delete this.v23[i]._doc.c;
-                    delete this.v23[i]._doc.r;
-                }
-            }
         }
 
-        if (this.v6) {
-            if (this.v6 === 'as') { //Si v6 es una analitica de serie periodica entonces el campo s1 es obligatorio
-                for (var i = 0; i < this.v10.length; i++) {
-                    if (!this.v10[i].s1)
-                        return next(new Error('The affiliation is obligatory for analitics of periodic series in the field v10'));
-                }
-                for (var i = 0; i < this.v16.length; i++) {
-                    if (!this.v16[i].s1)
-                        return next(new Error('The affiliation is obligatory for analitics of periodic series in the field v16'));
-                }
-                for (var i = 0; i < this.v23.length; i++) {
-                    if (!this.v23[i].s1)
-                        return next(new Error('The affiliation is obligatory for analitics of periodic series in the field v23'));
-                }
-            }
-            if (this.v6 === 'mc' || this.v6 === 'amc') { //Si v6 es una monografia perteneciente a una colección, o una analítica perteneciente a una colección, entonces el campo s1 es obligatorio
-                if (!this.v21)
-                    return next(new Error('The field "v21" must be obligatory if the level of treatment are "mc" or "amc"'));
-            }
-        }
 
 //**************** Others Validations *****************/
 
-        if (!this.v10.length && !this.v11.length) { //Si v10 y v11 no son llenados, entonces ponerle valor 'Anon' a v10
-            this.v10.push({'_': 'Anon'});
+        if (this.v6 === 'am' || this.v6 === 'amc') {
+            if (!this.v10.length && !this.v11.length) { //Si v10 y v11 no son llenados, entonces ponerle valor 'Anon' a v10
+                this.v10.push({'_': 'Anon'});
+            }
+
+            if (this.v10.length && this.v11.length) { //Si v10 y v11 son llenados, entonces solo dejar v10 con valor
+                this.v11.splice(0, this.v11.length);
+            }
         }
 
-        if (this.v10.length && this.v11.length) { //Si v10 y v11 son llenados, entonces solo dejar v10 con valor
-            this.v11.splice(0, this.v11.length);
+        if (this.v6 === 'amc' || this.v6 === 'mc' || this.v6 === 'c') {
+            if (!this.v23.length && !this.v24.length) { //Si v23 y v24 no son llenados, entonces ponerle valor 'Anon' a v23
+                this.v23.push({'_': 'Anon'});
+            }
+
+            if (this.v23.length && this.v24.length) { //Si v23 y v24 son llenados, entonces solo dejar v23 con valor
+                this.v24.splice(0, this.v24.length);
+            }
         }
 
         if (!this.v16.length && !this.v17.length) { //Si v16 y v17 no son llenados, entonces ponerle valor 'Anon' a v16
@@ -852,20 +834,24 @@ MonographSchema.pre('save', function (next) { //
             this.v17.splice(0, this.v17.length);
         }
 
-        if (!this.v23.length && !this.v24.length) { //Si v23 y v24 no son llenados, entonces ponerle valor 'Anon' a v23
-            this.v23.push({'_': 'Anon'});
+        if (this.v16.length) {
+            for (var i = 0; i < this.v16.length; i++) {
+                if (!this.v16[i].s1 || (this.v16[i].s1 === 's.af')) {  //Si el campo 's1' de v16 no existe o tiene valor 's.af' entonces eliminar los otros datos de afiliacion
+                    delete this.v16[i]._doc.s2;
+                    delete this.v16[i]._doc.s3;
+                    delete this.v16[i]._doc.p;
+                    delete this.v16[i]._doc.c;
+                }
+            }
         }
 
-        if (this.v23.length && this.v24.length) { //Si v23 y v24 son llenados, entonces solo dejar v23 con valor
-            this.v24.splice(0, this.v24.length);
-        }
 
         if (this.v54) { //Si v54 existe y tiene valor "s.f", entonces v55 no debe existir
             if (this.v54 === 's.f') {
                 delete this._doc.v55;
             } else {
                 if (!this.v55)
-                    return next(new Error('The field "v55" must exist because the field "v54" exist'));
+                    return next(new Error('Entering information in the field "v55", is conditioned to field "v54"'));
             }
         }
 
@@ -874,23 +860,38 @@ MonographSchema.pre('save', function (next) { //
                 delete this._doc.v65;
             } else {
                 if (!this.v65)
-                    return next(new Error('The field "v65" must exist because the field "v64" exist'));
+                    return next(new Error('Entering information in the field "v65", is conditioned to field "v64"'));
             }
         }
 
-        if (this.v75 < this.v74) {
+        if (this.v75 < this.v74) { //Si v75 es menor que v74
             return next(new Error('The field "v75" must be bigger than "v74"'));
-        }
-
-        if (this.v64) {
-            if (!this.v65) {
-                return next(new Error('The field "v65" must exist because the field "v64" exist'));
-            }
         }
 
         if (this.v66) {
             if (!this.v67) {
-                return next(new Error('The field "v67" must exist because the field "v66" exist'));
+                return next(new Error('Entering information in the field "v67", is conditioned to field "v66"'));
+            }
+        }
+
+        if (!this.v8.length) {
+            if (!this.v20) {
+                return next(new Error('Tbe field "v20", is obligatory if is not a electronic document'));
+            }
+        }
+
+        if (this.v18.length) {
+            var temp = false;
+            for (var j = 0; j < this.v18.length; j++) {
+                if (this.v18[j].i === 'en') {  //Si existe al menos un campo en english
+                    temp = true;
+                }
+            }
+            if(!temp && !this.v19){ //Si todos los titulos estan en otros idiomas distintos al english y el campo v19 esta vacio
+                return next(new Error('Tbe field "v18", requires that the translation is specified in the "v19" field'));
+            }
+            if(temp && this.v19){ //Si al menos un titulo esta en idioma english y el campo v19 esta lleno, entonces elimino el campo v19 con la traduccion
+                delete this._doc.v19;
             }
         }
 
