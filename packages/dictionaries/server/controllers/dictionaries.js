@@ -72,7 +72,7 @@ exports.add = function (req, res) {
 
     });*/
 
-    var monograph = new Monograph({
+    var monograph =   new Monograph({
         v1: 'BR1.1', //(LLenado automatico)
         v4: 'CUMED', //(LLenado automatico)
         v5: 'M', //(LLenado automatico)
@@ -82,7 +82,7 @@ exports.add = function (req, res) {
         v92: 'FSM', //(LLenado automatico)
         v93: {_: 20060626, i: '14:04:18', f: '14:04:37', t: '0:04:37'}, //(LLenado automatico)
         v98: 'FONTE', //(LLenado automatico
-        v899: 'LILDBIWEB-1.8', //(LLenado automatico)
+        v899: 'LILDBIWEB-1.8', //(LLenado automatico
         v9: 'a',
         v16: [
             {'_': 'Fidel, Santana', 's1': 'dsfasdfa', 's2': 'jjjjjjj', 'p': 'Iran', 'r': 'edt'}
@@ -96,16 +96,42 @@ exports.add = function (req, res) {
         v40: 'es',
         v62: ['Gente Nueva', 'Guama'],
         v64: 'ago.-oct. 1991',
-        v65: '51619819',
+        v65: '00000055',
         v66: 'La Habana',
         v67: 'CU',
         v87: [
             {d: 'Sarampión', s: 'inmunol', k: 'kakakak'},
             {d: 'Vacuna Antisarampión', s: 'inmunol'},
             {d: 'Agua', s: 'anal'}
+        ],
+        v14: [
+            {'_': '[24543-3]', 'f': 5},
+            {'_': '[1-3]', 'f': 1, 'l': 500}
+        ],
+        v110: 'b',
+        v74: 1912,
+        v75: 1915,
+        v53: ['prueba'],
+        v54: '45234523',
+        v55: '45234523',
+        v56: 'fasdfads',
+        v83: [
+            {_: 'SaraEstos aka aska slaksdjfa alaksjld alalkasdj flal alsjkdlkmpión', i: 'es'},
+            {_: 'Sarampión', i: 'es'}
         ]
     });
 
+
+  /* var doc =  Monograph.find({"v5": 'M', "v6": 'm'}, function (err, docs) {
+       var hola = docs;
+       var cucu = JSON.stringify(hola[0].id);
+   });
+
+  var ff = Monograph.findById('54315dd4d9f2eeb40e14a882', function (err, adventure) {
+      var hola = adventure;
+      var cucu = JSON.stringify(hola);
+  });
+*/
     monograph.save(function (err) {
         if (err) {
             var modelErrors = [];
