@@ -83,8 +83,8 @@ exports.add = function (req, res) {
         v93: {_: 20060626, i: '14:04:18', f: '14:04:37', t: '0:04:37'}, //(LLenado automatico)
         v98: 'FONTE', //(LLenado automatico
         v899: 'LILDBIWEB-1.8', //(LLenado automatico
-        v9: 'a',
-        v16: [
+        v9: 'a'
+       /* v16: [
             {'_': 'Fidel, Santana', 's1': 'dsfasdfa', 's2': 'jjjjjjj', 'p': 'Iran', 'r': 'edt'}
         ],
         v18: [
@@ -96,7 +96,7 @@ exports.add = function (req, res) {
         v40: 'es',
         v62: ['Gente Nueva', 'Guama'],
         v64: 'ago.-oct. 1991',
-        v65: '00000055',
+        v65: 45234524,
         v66: 'La Habana',
         v67: 'CU',
         v87: [
@@ -118,7 +118,7 @@ exports.add = function (req, res) {
         v83: [
             {_: 'SaraEstos aka aska slaksdjfa alaksjld alalkasdj flal alsjkdlkmpión', i: 'es'},
             {_: 'Sarampión', i: 'es'}
-        ]
+        ]*/
     });
 
 

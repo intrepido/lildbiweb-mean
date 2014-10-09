@@ -71,6 +71,32 @@ var validate_v16_s1 = function (value) {
     return true
 };
 
+var validate_v19 = function (value) {
+    if (this.v18.length) {
+        var temp = false;
+        for (var j = 0; j < this.v18.length; j++) {
+            if (this.v18[j].i === 'en') {  //Si existe al menos un campo en English
+                temp = true;
+            }
+        }
+        if (!temp && !value) { //Si todos los titulos estan en otros idiomas distintos al english y el campo v19 esta vacio
+            return false;
+        }
+        if (temp && value) { //Si al menos un titulo esta en idioma english y el campo v19 esta lleno, entonces elimino el campo v19 con la traduccion
+            delete this._doc.v19;
+        }
+    }
+
+    return true;
+};
+
+var validate_v20 = function (value) {
+    if (!value && !this.v8.length) {
+        return false;
+    }
+    return true;
+};
+
 var validate_v23_s1 = function (value) {
     if (value !== 's.af' && value) { //Si el subcampo s1 de v23, existe y tiene una afiliacion valida, entonces el subcampo p es obligatorio
         if (!this.p)
@@ -80,7 +106,7 @@ var validate_v23_s1 = function (value) {
 };
 
 var validate_v54 = function (value) {
-    if(value){
+    if (value) {
         if (value === 's.f') { //Si v54 tiene valor "s.f", entonces v55 no debe existir
             delete this._doc.v55;
         } else {
@@ -92,30 +118,30 @@ var validate_v54 = function (value) {
 };
 
 var validate_v55 = function (value) {
-    if(value){
+    if (value) {
         return value.toString().length === 8;
     }
 };
 
 /*var validate_v64 = function (value) {
-    if (value === 's.f') {//Si v64 tiene valor "s.f", entonces v65 no debe existir
-        delete this._doc.v65;
-    } else {
-        if (!this.v65)
-            return false;
-    }
-    return true;
-};*/
+ if (value === 's.f') {//Si v64 tiene valor "s.f", entonces v65 no debe existir
+ delete this._doc.v65;
+ } else {
+ if (!this.v65)
+ return false;
+ }
+ return true;
+ };*/
 
 var validate_v65 = function (value) {
-    if(value){
+    if (value) {
         return value.toString().length === 8;
     }
 
 };
 
-var validate_v66 = function (value) {
-    return !this.v67 ? false : true;
+var validate_v67 = function (value) {
+    return !value ? false : true;
 };
 
 var validate_v69 = function (value) {
@@ -337,11 +363,14 @@ var MonographSchema = new Schema({
     ],
     v19: { //TÍTULO TRADUCIDO AL INGLÉS (nivel monográfico)
         type: String,
+        default: null, //Para que exista y pueda efectuarse la validacion
+        validate: [validate_v19, 'The translation must be specified in the field "v19"'],
         trim: true
     },
     v20: { //PÁGINAS (nivel monográfico)
         type: String,
         default: null, //Para que exista y pueda efectuarse la validacion
+        validate: [validate_v20, 'The field "v20" is obligatory, if is not an electronic document'],
         trim: true
     },
     v21: { //VOLUMEN (nivel monográfico)
@@ -495,11 +524,12 @@ var MonographSchema = new Schema({
     v66: { //CIUDAD DE PUBLICACIÓN
         type: String,
         trim: true,
-        required: true,
-        validate: [validate_v66, 'Entering information in the field "v67", is conditioned to field "v66"']
+        required: true
     },
     v67: { //PAÍS DE PUBLICACIÓN
         type: String,
+        default: null, //Para que exista y pueda efectuarse la validacion
+        validate: [validate_v67, 'Entering information in the field "v67", is conditioned to field "v66"'],
         enum: countryCode
     },
     v68: [ //SÍMBOLO
@@ -974,7 +1004,7 @@ MonographSchema.path('v12').validate(function (value) {
     return true;
 }, 'The field "v12" is obligatory');
 
-MonographSchema.path('v18').validate(function (value) { //1
+MonographSchema.path('v18').validate(function (value) {
     if ((this.v5 === 'M' || this.v5 === 'MC' || this.v5 === 'MCP' || this.v5 === 'MP') && (this.v6 === 'am' || this.v6 === 'amc' || this.v6 === 'm' || this.v6 === 'mc')) {
         if (!value.length) {
             return false;
@@ -982,29 +1012,6 @@ MonographSchema.path('v18').validate(function (value) { //1
     }
     return true;
 }, 'The field "v18" is obligatory');
-
-MonographSchema.path('v18').validate(function (value) { //2
-    var temp = false;
-    for (var j = 0; j < value.length; j++) {
-        if (this.v18[j].i === 'en') {  //Si existe al menos un campo en English
-            temp = true;
-        }
-    }
-    if (!temp && !this.v19) { //Si todos los titulos estan en otros idiomas distintos al english y el campo v19 esta vacio
-        return false;
-    }
-    if (temp && this.v19) { //Si al menos un titulo esta en idioma english y el campo v19 esta lleno, entonces elimino el campo v19 con la traduccion
-        delete this._doc.v19;
-    }
-    return true;
-}, 'Tbe field "v18", requires that the translation is specified in the "v19" field');
-
-MonographSchema.path('v20').validate(function (value) {
-    if(!value && !this.v8.length){
-        return false;
-    }
-    return true;
-}, 'The field "v20" is obligatory, if is not an electronic document');
 
 MonographSchema.path('v25').validate(function (value) {
     if (this.v5 === ('M') && (this.v6 === 'amc' || this.v6 === 'mc' || this.v6 === 'c')) {
@@ -1053,10 +1060,10 @@ MonographSchema.path('v92').validate(function (value) {
  * Post-validate hook (More Advanced Validations).
  **********************************************************************************/
 /*
-MonographSchema.post('validate', function (next) {
+ MonographSchema.post('validate', function (next) {
 
-});
-*/
+ });
+ */
 
 /***********************************************************************************
  * Pre-save hook (More Advanced Validations).
