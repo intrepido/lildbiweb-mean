@@ -86,7 +86,6 @@ var validate_v19 = function (value) {
             delete this._doc.v19;
         }
     }
-
     return true;
 };
 
@@ -103,6 +102,24 @@ var validate_v23_s1 = function (value) {
             return false;
     }
     return true
+};
+
+var validate_v26 = function (value) {
+    if (this.v25 && this.v25.length) {
+        var temp = false;
+        for (var j = 0; j < this.v25.length; j++) {
+            if (this.v25[j].i === 'en') {  //Si existe al menos un campo en English
+                temp = true;
+            }
+        }
+        if (!temp && !value) { //Si todos los titulos estan en otros idiomas distintos al english y el campo v26 esta vacio
+            return false;
+        }
+        if (temp && value) { //Si al menos un titulo esta en idioma english y el campo v26 esta lleno, entonces elimino el campo v26 con la traduccion
+            delete this._doc.v26;
+        }
+    }
+    return true;
 };
 
 var validate_v55 = function (value) {
@@ -407,6 +424,12 @@ var MonographSchema = new Schema({
             }
         }
     ],
+    v26: { //TÍTULO TRADUCIDO PARA EL INGLÊS (nivel colección)
+        type: String,
+        default: null, //Para que exista y pueda efectuarse la validacion
+        validate: [validate_v26, 'The translation must be specified in the field "v26"'],
+        trim: true
+    },
     v27: { //NÚMERO TOTAL DE VOLÚMENES (nivel colección)
         type: Number,
         trim: true
@@ -805,10 +828,13 @@ MonographSchema.pre('validate', function (next) {
             delete this._doc.v23;
             delete this._doc.v24;
             delete this._doc.v25;
+            delete this._doc.v26;
             delete this._doc.v27;
         }
+        if (this.v6 === 'mc' || this.v6 === 'amc'){
+            delete this._doc.v26;
+        }
 
-        delete this._doc.v26; //Este parece que tiene que existir para (c)
         delete this._doc.v30;
         delete this._doc.v31;
         delete this._doc.v32;

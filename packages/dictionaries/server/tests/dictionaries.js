@@ -124,6 +124,7 @@ describe('<Unit Test>', function () {
                         {'_': 'Cólera: informe técnico', 'i': 'es'},
                         {'_': 'Simpósio de Plantas Medicinais no Brasil', 'i': 'pt'}
                     ],
+                    v26: 'Cholera: Inform technical',
                     v18: [
                         {'_': 'Cólera: informe técnico', 'i': 'es'},
                         {'_': 'Simpósio de Plantas Medicinais no Brasil', 'i': 'pt'}
