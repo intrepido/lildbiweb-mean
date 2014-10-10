@@ -30,7 +30,7 @@ var idiomCode = ['en', 'es', 'pt', 'fr']; //Codificador
 
 var countryCode = ['BR', 'CO', 'CU', 'PR']; //Codificador
 
-var itemForm = ['a', 'b', 'c', 'd']; //Codificador
+var itemForm = [null, 'a', 'b', 'c', 'd', 's']; //Codificador
 
 var computerFileType = ['a', 'b', 'c', 'd']; //Codificador
 
@@ -72,7 +72,7 @@ var validate_v16_s1 = function (value) {
 };
 
 var validate_v19 = function (value) {
-    if (this.v18.length) {
+    if (this.v18 && this.v18.length) {
         var temp = false;
         for (var j = 0; j < this.v18.length; j++) {
             if (this.v18[j].i === 'en') {  //Si existe al menos un campo en English
@@ -91,7 +91,7 @@ var validate_v19 = function (value) {
 };
 
 var validate_v20 = function (value) {
-    if (!value && !this.v8.length) {
+    if (!value && !this.v8.length && this.v6 !== 'c') {
         return false;
     }
     return true;
@@ -105,33 +105,11 @@ var validate_v23_s1 = function (value) {
     return true
 };
 
-var validate_v54 = function (value) {
-    if (value) {
-        if (value === 's.f') { //Si v54 tiene valor "s.f", entonces v55 no debe existir
-            delete this._doc.v55;
-        } else {
-            if (!this.v55)
-                return false;
-        }
-    }
-    return true;
-};
-
 var validate_v55 = function (value) {
     if (value) {
         return value.toString().length === 8;
     }
 };
-
-/*var validate_v64 = function (value) {
- if (value === 's.f') {//Si v64 tiene valor "s.f", entonces v65 no debe existir
- delete this._doc.v65;
- } else {
- if (!this.v65)
- return false;
- }
- return true;
- };*/
 
 var validate_v65 = function (value) {
     if (value) {
@@ -170,6 +148,13 @@ var validate_v84 = function (value) {
 
 var validate_v83 = function (value) {
     return value.length <= 2000;
+};
+
+var validate_v110 = function (value) {
+    if((this.v4.indexOf('LILACS') !== -1) && this.v8.length && (value !== 's')){
+        return false;
+    }
+    return true;
 };
 
 
@@ -375,6 +360,7 @@ var MonographSchema = new Schema({
     },
     v21: { //VOLUMEN (nivel monográfico)
         type: String,
+        match: [/^((v|pt|t)\.\d+,*)+$/, 'The volume ({VALUE}) must match with (Ej: v.3 or t.3 or pt.3 or v.3,t.6) format'],
         trim: true
     },
     v23: [ //AUTOR PERSONAL (nivel colección)
@@ -467,15 +453,17 @@ var MonographSchema = new Schema({
     ],
     v54: { //EVENTO – FECHA
         type: String,
-        trim: true,
-        validate: [validate_v54, 'Entering information in the field "v55", is conditioned to field "v54"']
+        default: null, //Para que exista y pueda efectuarse la validacion
+        trim: true
     },
     v55: { //FECHA NORMALIZADA
         type: Number,
+        default: null, //Para que exista y pueda efectuarse la validacion
         validate: [validate_v55, 'The normalized date ({VALUE}) must have 8 characters exactly']
     },
     v56: { //EVENTO – CIUDAD
         type: String,
+        default: null, //Para que exista y pueda efectuarse la validacion
         trim: true
     },
     v57: { //EVENTO – PAÍS
@@ -706,6 +694,8 @@ var MonographSchema = new Schema({
     },
     v110: { //FORMA DEL ÍTEM
         type: String,
+        default: null, //Para que exista y pueda efectuarse la validacion
+        validate: [validate_v110, 'For the database LILACS, the traditional material who has an electronic format "v8", must be fill with option "Electronic"'],
         enum: itemForm
     },
     v111: { //TIPO DE ARCHIVO DE COMPUTADOR
@@ -800,6 +790,17 @@ MonographSchema.pre('validate', function (next) {
             delete this._doc.v13;
             delete this._doc.v14;
         }
+        if (this.v6 === 'c') {
+            delete this._doc.v3;
+            delete this._doc.v16;
+            delete this._doc.v17;
+            delete this._doc.v18;
+            delete this._doc.v19;
+            delete this._doc.v20;
+            delete this._doc.v21;
+            delete this._doc.v61;
+            delete this._doc.v85;
+        }
         if (this.v6 === 'am' || this.v6 === 'm') {
             delete this._doc.v23;
             delete this._doc.v24;
@@ -807,7 +808,7 @@ MonographSchema.pre('validate', function (next) {
             delete this._doc.v27;
         }
 
-        delete this._doc.v26;
+        delete this._doc.v26; //Este parece que tiene que existir para (c)
         delete this._doc.v30;
         delete this._doc.v31;
         delete this._doc.v32;
@@ -841,6 +842,42 @@ MonographSchema.pre('validate', function (next) {
         }
     }
 
+
+//**************** v9 Validations *****************/
+
+    if (this.v9 === 'm') {
+        delete this._doc.v110;
+        delete this._doc.v112;
+        delete this._doc.v113;
+        delete this._doc.v114;
+        delete this._doc.v115;
+    }
+    if (this.v9 === 'a' || this.v9 === 'c' || this.v9 === 'd' || this.v9 === 'i' || this.v9 === 'j' || this.v9 === 'p' || this.v9 === 't') {
+        delete this._doc.v111;
+        delete this._doc.v112;
+        delete this._doc.v113;
+        delete this._doc.v114;
+        delete this._doc.v115;
+    }
+    if (this.v9 === 'e' || this.v9 === 'f') {
+        delete this._doc.v111;
+        delete this._doc.v113;
+        delete this._doc.v114;
+        delete this._doc.v115;
+    }
+    if (this.v9 === 'g' || this.v9 === 'r' || this.v9 === 'o') {
+        delete this._doc.v111;
+        delete this._doc.v112;
+        delete this._doc.v113;
+        delete this._doc.v115;
+    }
+    if (this.v9 === 'k') {
+        delete this._doc.v111;
+        delete this._doc.v112;
+        delete this._doc.v113;
+    }
+
+
 //**************** Other Validations *****************/
 
     if (this.v6 === 'am' || this.v6 === 'amc') {
@@ -861,21 +898,23 @@ MonographSchema.pre('validate', function (next) {
         }
     }
 
-    if (!this.v16.length && !this.v17.length) { //Si v16 y v17 no son llenados, entonces ponerle valor 'Anon' a v16
-        this.v16.push({'_': 'Anon'});
-    }
+    if(this.v16){
+        if (!this.v16.length && !this.v17.length) { //Si v16 y v17 no son llenados, entonces ponerle valor 'Anon' a v16
+            this.v16.push({'_': 'Anon'});
+        }
 
-    if (this.v16.length && this.v17.length) { //Si v16 y v17 son llenados, entonces solo dejar v16 con valor
-        this.v17.splice(0, this.v17.length);
-    }
+        if (this.v16.length && this.v17.length) { //Si v16 y v17 son llenados, entonces solo dejar v16 con valor
+            this.v17.splice(0, this.v17.length);
+        }
 
-    if (this.v16.length) {
-        for (var i = 0; i < this.v16.length; i++) {
-            if (!this.v16[i].s1 || (this.v16[i].s1 === 's.af')) {  //Si el campo 's1' de v16 no existe o tiene valor 's.af' entonces eliminar los otros datos de afiliacion
-                delete this.v16[i]._doc.s2;
-                delete this.v16[i]._doc.s3;
-                delete this.v16[i]._doc.p;
-                delete this.v16[i]._doc.c;
+        if (this.v16.length) {
+            for (var i = 0; i < this.v16.length; i++) {
+                if (!this.v16[i].s1 || (this.v16[i].s1 === 's.af')) {  //Si el campo 's1' de v16 no existe o tiene valor 's.af' entonces eliminar los otros datos de afiliacion
+                    delete this.v16[i]._doc.s2;
+                    delete this.v16[i]._doc.s3;
+                    delete this.v16[i]._doc.p;
+                    delete this.v16[i]._doc.c;
+                }
             }
         }
     }
@@ -891,109 +930,6 @@ MonographSchema.pre('validate', function (next) {
 MonographSchema.path('v4').validate(function (value) {
     return value.length ? true : false;
 }, 'The field "v4" is obligatory');
-
-MonographSchema.path('v5').validate(function (value) { //1
-    if (value === 'MC' || value === 'MCP') {//Si es una Conferencia o Evento (C)
-        if (!this.v53.length) {
-            return false;
-        }
-    }
-    return true;
-}, 'The field "v53" is obligatory');
-
-MonographSchema.path('v5').validate(function (value) { //2
-    if (value === 'MC' || value === 'MCP') {//Si es una Conferencia o Evento (C)
-        if (!this.v54) {
-            return false;
-        }
-    }
-    return true;
-}, 'The field "v54" is obligatory');
-
-MonographSchema.path('v5').validate(function (value) { //3
-    if (value === 'MC' || value === 'MCP') {//Si es una Conferencia o Evento (C)
-        if (!this.v56) {
-            return false;
-        }
-    }
-    return true;
-}, 'The field "v56" is obligatory');
-
-MonographSchema.path('v9').validate(function (value) { //1
-    if (value === 'm') {
-        if (!this.v111) {
-            return false;
-        }
-        else {
-            delete this._doc.v110;
-            delete this._doc.v112;
-            delete this._doc.v113;
-            delete this._doc.v114;
-            delete this._doc.v115;
-        }
-    }
-    return true;
-}, 'Entering information in the field "v111", is conditioned to field "v9"');
-
-MonographSchema.path('v9').validate(function (value) { //2
-    if (value === 'a' || value === 'c' || value === 'd' || value === 'i' || value === 'j' || value === 'p' || value === 't') {
-        if (!this.v110) {
-            return false;
-        }
-        else {
-            delete this._doc.v111;
-            delete this._doc.v112;
-            delete this._doc.v113;
-            delete this._doc.v114;
-            delete this._doc.v115;
-        }
-    }
-    return true;
-}, 'Entering information in the field "v110", is conditioned to field "v9"');
-
-MonographSchema.path('v9').validate(function (value) { //3
-    if (value === 'e' || value === 'f') {
-        if (!this.v110 || !this.v112) {
-            return false;
-        }
-        else {
-            delete this._doc.v111;
-            delete this._doc.v113;
-            delete this._doc.v114;
-            delete this._doc.v115;
-        }
-    }
-    return true;
-}, 'Entering information in the fields "v110" and "v112", are conditioned to field "v9"');
-
-MonographSchema.path('v9').validate(function (value) { //4
-    if (value === 'g' || value === 'r' || value === 'o') {
-        if (!this.v110 || !this.v114) {
-            return false;
-        }
-        else {
-            delete this._doc.v111;
-            delete this._doc.v112;
-            delete this._doc.v113;
-            delete this._doc.v115;
-        }
-    }
-    return true;
-}, 'Entering information in the fields "v110" and "v114", are conditioned to field "v9"');
-
-MonographSchema.path('v9').validate(function (value) { //5
-    if (this.v9 === 'k') {
-        if (!this.v110 || !this.v114 || !this.v115) {
-            return false;
-        }
-        else {
-            delete this._doc.v111;
-            delete this._doc.v112;
-            delete this._doc.v113;
-        }
-    }
-    return true;
-}, 'Entering information in the fields "v110", "v114" and "v115", are conditioned to field "v9"');
 
 MonographSchema.path('v12').validate(function (value) {
     if ((this.v5 === 'M' || this.v5 === 'MC' || this.v5 === 'MCP' || this.v5 === 'MP') && (this.v6 === 'am' || this.v6 === 'amc')) {
@@ -1025,6 +961,45 @@ MonographSchema.path('v25').validate(function (value) {
 MonographSchema.path('v40').validate(function (value) {
     return value.length ? true : false;
 }, 'The field "v40" is obligatory');
+
+MonographSchema.path('v53').validate(function (value) {
+    if (this.v5 === 'MC' || this.v5 === 'MCP') {//Si es una Conferencia o Evento (C)
+        if (!value.length) {
+            return false;
+        }
+    }
+    return true;
+}, 'The field "v53" is obligatory');
+
+MonographSchema.path('v54').validate(function (value) {
+    if (this.v5 === 'MC' || this.v5 === 'MCP') {//Si es una Conferencia o Evento (C)
+        if (!value) {
+            return false;
+        }
+    }
+    return true;
+}, 'The field "v54" is obligatory');
+
+MonographSchema.path('v55').validate(function (value) {
+    if (this.v54) {
+        if (this.v54 === 's.f') { //Si v54 tiene valor "s.f", entonces v55 no debe existir
+            delete this._doc.v55;
+        } else {
+            if (!value)
+                return false;
+        }
+    }
+    return true;
+}, 'Entering information in the field "v55", is conditioned to field "v54"');
+
+MonographSchema.path('v56').validate(function (value) {
+    if (this.v5 === 'MC' || this.v5 === 'MCP') {//Si es una Conferencia o Evento (C)
+        if (!value) {
+            return false;
+        }
+    }
+    return true;
+}, 'The field "v56" is obligatory');
 
 MonographSchema.path('v62').validate(function (value) {
     return value.length ? true : false;

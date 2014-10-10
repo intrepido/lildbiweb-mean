@@ -74,16 +74,38 @@ exports.add = function (req, res) {
 
     var monograph =   new Monograph({
         v1: 'BR1.1', //(LLenado automatico)
-        v4: 'CUMED', //(LLenado automatico)
+        v4: 'LILACS', //(LLenado automatico)
         v5: 'M', //(LLenado automatico)
-        v6: 'm', //(LLenado automatico)
+        v6: 'mc', //(LLenado automatico)
         v84: '20041217', //(LLenado automatico)
         v91: {_: 20060626, i: '14:04:18', f: '14:04:37', t: '0:04:37'}, //(LLenado automatico)
         v92: 'FSM', //(LLenado automatico)
         v93: {_: 20060626, i: '14:04:18', f: '14:04:37', t: '0:04:37'}, //(LLenado automatico)
         v98: 'FONTE', //(LLenado automatico
         v899: 'LILDBIWEB-1.8', //(LLenado automatico
-        v9: 'a'
+        v9: 'a',
+        v18: [
+            {'_': 'Cólera: informe técnico', 'i': 'es'},
+            {'_': 'Simpósio de Plantas Medicinais no Brasil', 'i': 'pt'}
+        ],
+        v66: 'La Habana',
+        v67: 'CU',
+        v64: '1998',
+        v65: 19980000,
+        v40: 'es',
+        v19: 'Cholera: Inform technical',
+        v20: 32,
+        v21: 'pt.354',
+        v62: ['Gente Nueva', 'Guama'],
+        v87: [
+            {d: 'Sarampión', s: 'inmunol', k: 'kakakak'},
+            {d: 'Vacuna Antisarampión', s: 'inmunol'},
+            {d: 'Agua', s: 'anal'}
+        ],
+        v25: [
+            {'_': 'Cólera: informe técnico', 'i': 'es'},
+            {'_': 'Simpósio de Plantas Medicinais no Brasil', 'i': 'pt'}
+        ]
        /* v16: [
             {'_': 'Fidel, Santana', 's1': 'dsfasdfa', 's2': 'jjjjjjj', 'p': 'Iran', 'r': 'edt'}
         ],
