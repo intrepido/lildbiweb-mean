@@ -22,7 +22,7 @@ var fileExtension = ['css', 'cmp']; //Codificador
 
 var fileType = ['AUDIO', 'BASE DE DADOS', 'COMPACTADO']; //Codificador
 
-var registerType = ['a', 'c', 'd', 'e', 'f', 'g', 'i', 'j', 'k', 'm', 'o', 'p', 'r', 't']; //Codificador
+var registerType = [null, 'a', 'c', 'd', 'e', 'f', 'g', 'i', 'j', 'k', 'm', 'o', 'p', 'r', 't']; //Codificador
 
 var responsibilityGrade = ['edt', 'com', 'coord', 'org']; //Codificador
 
@@ -38,7 +38,7 @@ var cartographicTypeMaterial = ['a', 'b', 'c', 'd']; //Codificador
 
 var newspaperType = ['l', 'n', 'p', 'u']; //Codificador
 
-var visualMaterialType = ['a', 'c', 'f', 'k']; //Codificador
+var visualMaterialType = [null, 'm', 'v', 'f', 'k']; //Codificador
 
 var specificDesignationMaterial = ['c', 'd', 'e', 'f']; //Codificador
 
@@ -47,12 +47,38 @@ var specificDesignationMaterial = ['c', 'd', 'e', 'f']; //Codificador
  * Validations Squema Level (Simple).
  **********************************************************************************/
 
+
+var validate_v9 = function (value) {
+    if ((this.v4.indexOf('LILACS') !== -1) && (value === 'c' || value === 'd' || value === 'e' || value === 'f'  || value === 'j' || value === 'k' || value === 'm' || value === 'o' || value === 'p' || value === 'r' || value === 't')) {
+        return false;
+    }
+    return true;
+};
+
 var validate_v10_s1 = function (value) {
     if (value !== 's.af' && value) { //Si el subcampo s1 de v10, existe y tiene una afiliacion valida, entonces el subcampo p es obligatorio
         if (!this.p)
             return false;
     }
     return true
+};
+
+var validate_v13 = function (value) {
+    if (this.v12 && this.v12.length) {
+        var temp = false;
+        for (var j = 0; j < this.v12.length; j++) {
+            if (this.v12[j].i === 'en') {  //Si existe al menos un campo en English
+                temp = true;
+            }
+        }
+        if (!temp && !value) { //Si todos los titulos estan en otros idiomas distintos al english y el campo v13 esta vacio
+            return false;
+        }
+        if (temp && value) { //Si al menos un titulo esta en idioma english y el campo v13 esta lleno, entonces elimino el campo v13 con la traduccion
+            delete this._doc.v13;
+        }
+    }
+    return true;
 };
 
 var validate_v16__ = function (value) {
@@ -91,6 +117,11 @@ var validate_v19 = function (value) {
 
 var validate_v20 = function (value) {
     if (!value && !this.v8.length && this.v6 !== 'c') {
+        for (var i = 0; i < this.v38.length; i++) {
+            if (this.v38[i].a === 'CD-ROM' || this.v38[i].a === 'Disquette') {
+                return true;
+            }
+        }
         return false;
     }
     return true;
@@ -168,7 +199,14 @@ var validate_v83 = function (value) {
 };
 
 var validate_v110 = function (value) {
-    if((this.v4.indexOf('LILACS') !== -1) && this.v8.length && (value !== 's')){
+    if ((this.v4.indexOf('LILACS') !== -1) && this.v8.length && (value !== 's')) {
+        return false;
+    }
+    return true;
+};
+
+var validate_v114 = function (value) {
+    if ((this.v4.indexOf('LILACS') !== -1) && this.v9 === 'g' && value !== 'm' && value !== 'v') {
         return false;
     }
     return true;
@@ -254,7 +292,9 @@ var MonographSchema = new Schema({
     ],
     v9: { //TIPO DE REGISTRO
         type: String,
+        default: null, //Para que exista y pueda efectuarse la validacion
         enum: registerType,
+        validate: [validate_v9, 'The value {{VALUE}} is not compatible with methodology of databases LILACS'],
         required: true
     },
     v10: [ //AUTOR PERSONAL (nivel analítico)
@@ -301,6 +341,8 @@ var MonographSchema = new Schema({
     ],
     v13: { //TÍTULO TRADUCIDO AL INGLÉS (nivel analítico)
         type: String,
+        default: null, //Para que exista y pueda efectuarse la validacion
+        validate: [validate_v13, 'The translation must be specified in the field "v13"'],
         trim: true
     },
     v14: [ //PÁGINAS (nivel analítico)
@@ -308,7 +350,7 @@ var MonographSchema = new Schema({
             _id: false,
             _: { //paginacion irregular o inexistente
                 type: String,
-                match: [/^\[\d+-\d+\]$/, 'The irregular pagination ({VALUE}) must match with "[initPage-lastPage]" format']
+                match: [/^\[\d+-?\d*\]$/, 'The irregular pagination ({VALUE}) must be between "[]"']
             },
             f: { //número inicial
                 type: String
@@ -718,7 +760,7 @@ var MonographSchema = new Schema({
     v110: { //FORMA DEL ÍTEM
         type: String,
         default: null, //Para que exista y pueda efectuarse la validacion
-        validate: [validate_v110, 'For the database LILACS, the traditional material who has an electronic format "v8", must be fill with option "Electronic"'],
+        validate: [validate_v110, 'For the database LILACS, the traditional material who has an electronic format "v8", must be fill with option Electronic (s)'],
         enum: itemForm
     },
     v111: { //TIPO DE ARCHIVO DE COMPUTADOR
@@ -735,6 +777,8 @@ var MonographSchema = new Schema({
     },
     v114: { //TIPO DE MATERIAL VISUAL
         type: String,
+        default: null, //Para que exista y pueda efectuarse la validacion
+        validate: [validate_v114, 'For databases LILACS, the type of visual material "v114" must be Film (m) or Video Recorder (v)'],
         enum: visualMaterialType
     },
     v115: { //DESIGNACIÓN ESPECÍFICA DEL MATERIAL (MATERIAL NO PROYECTABLE)
@@ -831,7 +875,7 @@ MonographSchema.pre('validate', function (next) {
             delete this._doc.v26;
             delete this._doc.v27;
         }
-        if (this.v6 === 'mc' || this.v6 === 'amc'){
+        if (this.v6 === 'mc' || this.v6 === 'amc') {
             delete this._doc.v26;
         }
 
@@ -913,6 +957,17 @@ MonographSchema.pre('validate', function (next) {
         if (this.v10.length && this.v11.length) { //Si v10 y v11 son llenados, entonces solo dejar v10 con valor
             this.v11.splice(0, this.v11.length);
         }
+
+        if (this.v10.length) {
+            for (var i = 0; i < this.v10.length; i++) {
+                if (!this.v10[i].s1 || (this.v10[i].s1 === 's.af')) {  //Si el campo 's1' de v16 no existe o tiene valor 's.af' entonces eliminar los otros datos de afiliacion
+                    delete this.v10[i]._doc.s2;
+                    delete this.v10[i]._doc.s3;
+                    delete this.v10[i]._doc.p;
+                    delete this.v10[i]._doc.c;
+                }
+            }
+        }
     }
 
     if (this.v6 === 'amc' || this.v6 === 'mc' || this.v6 === 'c') {
@@ -922,9 +977,20 @@ MonographSchema.pre('validate', function (next) {
         if (this.v23.length && this.v24.length) { //Si v23 y v24 son llenados, entonces solo dejar v23 con valor
             this.v24.splice(0, this.v24.length);
         }
+
+        if (this.v23.length) {
+            for (var i = 0; i < this.v23.length; i++) {
+                if (!this.v23[i].s1 || (this.v23[i].s1 === 's.af')) {  //Si el campo 's1' de v16 no existe o tiene valor 's.af' entonces eliminar los otros datos de afiliacion
+                    delete this.v23[i]._doc.s2;
+                    delete this.v23[i]._doc.s3;
+                    delete this.v23[i]._doc.p;
+                    delete this.v23[i]._doc.c;
+                }
+            }
+        }
     }
 
-    if(this.v16){
+    if (this.v16) {
         if (!this.v16.length && !this.v17.length) { //Si v16 y v17 no son llenados, entonces ponerle valor 'Anon' a v16
             this.v16.push({'_': 'Anon'});
         }
@@ -965,6 +1031,29 @@ MonographSchema.path('v12').validate(function (value) {
     }
     return true;
 }, 'The field "v12" is obligatory');
+
+MonographSchema.path('v14').validate(function (value) { //1
+    if (value && !value.length && !this.v8.length && (this.v6 === 'am' || this.v6 === 'amc')) {
+        for (var i = 0; i < this.v38.length; i++) {
+            if (this.v38[i].a === 'CD-ROM' || this.v38[i].a === 'Disquette') {
+                return true;
+            }
+        }
+        return false;
+    }
+    return true;
+}, 'The field "v14" is obligatory, if is not an electronic document');
+
+MonographSchema.path('v14').validate(function (value) { //2
+    if (value && value.length) {
+        for (var i = 0; i < value.length; i++) {
+            if (value[i]._ && (value[i].f || value[i].l)) {  //Si existe al menos en una instancia, valor en los campos "_" y en "f" o "l" al mismo tiempo
+                return false;
+            }
+        }
+    }
+    return true;
+}, 'The pagination in field "v14" dont be "irregular" and "no secuencial" at the same time');
 
 MonographSchema.path('v18').validate(function (value) {
     if ((this.v5 === 'M' || this.v5 === 'MC' || this.v5 === 'MCP' || this.v5 === 'MP') && (this.v6 === 'am' || this.v6 === 'amc' || this.v6 === 'm' || this.v6 === 'mc')) {
@@ -1071,17 +1160,18 @@ MonographSchema.path('v92').validate(function (value) {
  ***********************************************************************************/
 
 MonographSchema.pre('save', function (next) {
-
-//***************** Clean empty arrays ************************
-
         for (var obj in this._doc) {
+            //***************** Clean empty arrays ************************
             if (Array.isArray(this._doc[obj])) {
                 if (!this._doc[obj].length) {
                     delete this._doc[obj];
                 }
             }
+            //***************** Clean null fields ************************
+            if (!this._doc[obj]) {
+                delete this._doc[obj];
+            }
         }
-
         next();
     }
 );

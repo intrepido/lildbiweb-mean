@@ -65,7 +65,8 @@ describe('<Unit Test>', function () {
                  ],
                  v20: 'xvii,323',
                  v21: 'fasd',
-                 v30: 'Esto es una prueba para de un titulo   ',
+                 v30: 'Esto es una pr
+                 ueba para de un titulo   ',
                  v35: '32rv4145',
                  v40: 'es',
                  v50: 'Universidad de Buenos Aires. Facultad de Medicina',
@@ -99,7 +100,7 @@ describe('<Unit Test>', function () {
                     v1: 'BR1.1', //(LLenado automatico)
                     v4: 'LILACS', //(LLenado automatico)
                     v5: 'M', //(LLenado automatico)
-                    v6: 'c', //(LLenado automatico)
+                    v6: 'm', //(LLenado automatico)
                     v84: '20041217', //(LLenado automatico)
                     v91: {_: 20060626, i: '14:04:18', f: '14:04:37', t: '0:04:37'}, //(LLenado automatico)
                     v92: 'FSM', //(LLenado automatico)
@@ -107,27 +108,39 @@ describe('<Unit Test>', function () {
                     v98: 'FONTE', //(LLenado automatico
                     v899: 'LILDBIWEB-1.8', //(LLenado automatico
                     v9: 'a',
-                    v66: 'La Habana',
-                    v67: 'CU',
+                    v12: [
+                        {'_': 'Cólera: informe técnico', 'i': 'es'},
+                        {'_': 'Simpósio de Plantas Medicinais no Brasil', 'i': 'pt'}
+                    ],
+                    v13: 'Traducction',
+                    v14: [
+                        {_: '[5-43]'}
+                    ],
+                    v16: [
+                        {'_': 'Fidel, Santana', 'p': 'Iran'},
+                        {'_': 'Fernanadno, Sanchez'}
+                    ],
+                    v18: [
+                        {'_': 'Cólera: informe técnico', 'i': 'en'},
+                        {'_': 'Simpósio de Plantas Medicinais no Brasil', 'i': 'pt'}
+                    ],
+                    v20: 32,
+                    v25: [
+                        {'_': 'Cólera: informe técnico', 'i': 'en'}
+                    ],
+                    v40: 'es',
+                    v62: ['Gente Nueva', 'Guama'],
                     v64: '1998',
                     v65: 19980000,
-                    v40: 'es',
-                    v20: 32,
-                    v21: 'pt.354',
-                    v62: ['Gente Nueva', 'Guama'],
+                    v66: 'La Habana',
+                    v67: 'CU',
                     v87: [
                         {d: 'Sarampión', s: 'inmunol', k: 'kakakak'},
                         {d: 'Vacuna Antisarampión', s: 'inmunol'},
                         {d: 'Agua', s: 'anal'}
                     ],
-                    v25: [
-                        {'_': 'Cólera: informe técnico', 'i': 'es'},
-                        {'_': 'Simpósio de Plantas Medicinais no Brasil', 'i': 'pt'}
-                    ],
-                    v26: 'Cholera: Inform technical',
-                    v18: [
-                        {'_': 'Cólera: informe técnico', 'i': 'es'},
-                        {'_': 'Simpósio de Plantas Medicinais no Brasil', 'i': 'pt'}
+                    v38: [
+                        {b: 'Fidel Santana', a: 'CD-ROM', c: 'cmp', e: 'AUDIO'}
                     ]
 
                     /* v16: [
