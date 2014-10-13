@@ -529,10 +529,10 @@ var ThesisSchema = new Schema({
             }
         }
     ],
-    v84: { //FECHA DE TRANSFERENCIA PARA LA BASE DE DATOS   (LLenado automatico)
+    v84: { //FECHA DE TRANSFERENCIA PARA LA BASE DE DATOS
         type: Number,
         trim: true,
-        validate: [validate_v84, 'The transfered date ({VALUE}) to database must have 8 characters exactly'],
+        validate: [validate_v84, 'The transfered date to database must have 8 characters exactly'],
         required: true
     },
     v85: [ //PALABRAS-LLAVE DEL AUTOR  ************//Utiliza el DeSC
@@ -800,7 +800,7 @@ ThesisSchema.pre('validate', function (next) {
 
 //**************** Other Validations *****************/
 
-    if (this.v6 === 'am ' && this.v10 && this.v10.length) {
+    if (this.v6 === 'am' && this.v10 && this.v10.length) {
         for (var i = 0; i < this.v10.length; i++) {
             if (!this.v10[i].s1 || (this.v10[i].s1 === 's.af')) {  //Si el campo 's1' de v16 no existe o tiene valor 's.af' entonces eliminar los otros datos de afiliacion
                 delete this.v10[i]._doc.s2;
