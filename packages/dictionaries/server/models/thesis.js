@@ -1,19 +1,96 @@
 'use strict';
 
-/**
+/**********************************************************************************
  * Module dependencies.
- */
+ **********************************************************************************/
+
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
 
-/**
- * Validations
- */
+/**********************************************************************************
+ * Enumerators.
+ **********************************************************************************/
+
+var literatureTypes = ['S', 'SC', 'SCP', 'SP', 'M', 'MC', 'MCP', 'MP', 'MS', 'MSC', 'MSP', 'T', 'TS', 'N', 'NC', 'NP'];
+
+var treatmentLevel = ['m', 'mc', 'ms', 'am', 'amc', 'ams', 'as', 'c'];
+
+var languageCode = ['es', 'en']; //Codificador
+
+var fileExtension = ['css', 'cmp']; //Codificador
+
+var fileType = ['AUDIO', 'BASE DE DADOS', 'COMPACTADO']; //Codificador
+
+var registerType = [null, 'a', 'c', 'd', 'e', 'f', 'g', 'i', 'j', 'k', 'm', 'o', 'p', 'r', 't']; //Codificador
+
+var responsibilityGrade = ['edt', 'com', 'coord', 'org']; //Codificador
+
+var idiomCode = ['en', 'es', 'pt', 'fr']; //Codificador
+
+var countryCode = ['BR', 'CO', 'CU', 'PR']; //Codificador
+
+var itemForm = [null, 'a', 'b', 'c', 'd', 's']; //Codificador
+
+var computerFileType = ['a', 'b', 'c', 'd']; //Codificador
+
+var cartographicTypeMaterial = ['a', 'b', 'c', 'd']; //Codificador
+
+var newspaperType = ['l', 'n', 'p', 'u']; //Codificador
+
+var visualMaterialType = [null, 'm', 'v', 'f', 'k']; //Codificador
+
+var specificDesignationMaterial = ['c', 'd', 'e', 'f']; //Codificador
+
+
+/**********************************************************************************
+ /* Validations Squema Level (Simple).
+ /**********************************************************************************/
+
+var validate_v9 = function (value) {
+    if ((this.v4.indexOf('LILACS') !== -1) && (value === 'c' || value === 'd' || value === 'e' || value === 'f' || value === 'j' || value === 'k' || value === 'm' || value === 'o' || value === 'p' || value === 'r' || value === 't')) {
+        return false;
+    }
+    return true;
+};
+
+var validate_v10__ = function (value) {
+    if (value !== 'Anon' && value) { //Si el subcampo _ de v10, existe y no es 'Anon'
+        if (!value.match(/.,./)) //Si el subcampo _ de v10 no contiene coma
+            return false;
+    }
+    return true
+};
 
 var validate_v10_s1 = function (value) {
     if (value !== 's.af' && value) { //Si el subcampo s1 de v10, existe y tiene una afiliacion valida, entonces el subcampo p es obligatorio
         if (!this.p)
+            return false;
+    }
+    return true
+};
+
+var validate_v13 = function (value) {
+    if (this.v12 && this.v12.length) {
+        var temp = false;
+        for (var j = 0; j < this.v12.length; j++) {
+            if (this.v12[j].i === 'en') {  //Si existe al menos un campo en English
+                temp = true;
+            }
+        }
+        if (!temp && !value) { //Si todos los titulos estan en otros idiomas distintos al english y el campo v13 esta vacio
+            return false;
+        }
+        if (temp && value) { //Si al menos un titulo esta en idioma english y el campo v13 esta lleno, entonces elimino el campo v13 con la traduccion
+            delete this._doc.v13;
+        }
+    }
+    return true;
+};
+
+var validate_v16__ = function (value) {
+    if (value !== 'Anon' && value) { //Si el subcampo _ de v16, existe y no es 'Anon'
+        if (!value.match(/.,./)) //Si el subcampo _ de v16 no contiene coma
             return false;
     }
     return true
@@ -27,69 +104,104 @@ var validate_v16_s1 = function (value) {
     return true
 };
 
+var validate_v19 = function (value) {
+    if (this.v18 && this.v18.length) {
+        var temp = false;
+        for (var j = 0; j < this.v18.length; j++) {
+            if (this.v18[j].i === 'en') {  //Si existe al menos un campo en English
+                temp = true;
+            }
+        }
+        if (!temp && !value) { //Si todos los titulos estan en otros idiomas distintos al english y el campo v19 esta vacio
+            return false;
+        }
+        if (temp && value) { //Si al menos un titulo esta en idioma english y el campo v19 esta lleno, entonces elimino el campo v19 con la traduccion
+            delete this._doc.v19;
+        }
+    }
+    return true;
+};
+
+var validate_v20 = function (value) {
+    if (!value && !this.v8.length && this.v6 !== 'c') {
+        for (var i = 0; i < this.v38.length; i++) {
+            if (this.v38[i].a === 'CD-ROM' || this.v38[i].a === 'Disquette') {
+                return true;
+            }
+        }
+        return false;
+    }
+    return true;
+};
+
 var validate_v49_s1 = function (value) {
     if (value !== 's.af' && value) { //Si el subcampo s1 de v49, existe y tiene una afiliacion valida, entonces el subcampo p es obligatorio
         if (!this.p)
             return false;
     }
-    return true
+    return true;
 };
 
 var validate_v65 = function (value) {
-    return value.toString().length === 8;
+    if (value) {
+        return value.toString().length === 8;
+    }
+
+};
+
+var validate_v67 = function (value) {
+    return !value ? false : true;
 };
 
 var validate_v69 = function (value) {
     return value.length <= 13;
 };
 
+var validate_v74 = function (value) {
+    if (this.v75) {
+        if (this.v75 <= value) { //Si v75 es menor que v74
+            return false;
+        }
+    }
+    return true;
+};
+
+var validate_v75 = function (value) {
+    if (!this.v74) {
+        return false;
+    }
+    return true;
+};
+
 var validate_v84 = function (value) {
-    return value.toString().length === 8;
+    return (value && value.toString().length) === 8;
 };
 
 var validate_v83 = function (value) {
     return value.length <= 2000;
 };
 
+var validate_v110 = function (value) {
+    if ((this.v4.indexOf('LILACS') !== -1) && this.v8.length && (value !== 's')) {
+        return false;
+    }
+    return true;
+};
 
-/**
- * Enumerators.
- */
-var literatureTypes = ['S', 'SC', 'SCP', 'SP', 'M', 'MC', 'MCP', 'MP', 'MS', 'MSC', 'MSP', 'T', 'TS', 'N', 'NC', 'NP'];
+var validate_v114 = function (value) {
+    if ((this.v4.indexOf('LILACS') !== -1) && this.v9 === 'g' && value !== 'm' && value !== 'v') {
+        return false;
+    }
+    return true;
+};
 
-var treatmentLevel = ['m', 'mc', 'ms', 'am', 'amc', 'ams', 'as', 'c'];
 
-var languagueCode = ['es', 'en']; //Codificador
+/**********************************************************************************
+ * Thesis Schema.
+ **********************************************************************************/
 
-var fileExtension = ['css', 'cmp']; //Codificador
-
-var fileType = ['css', 'cmp']; //Codificador
-
-var registerType = ['a', 'c', 'd']; //Codificador
-
-var responsibilityGrade = ['edt', 'com', 'coord', 'org']; //Codificador
-
-var idiomCode = ['en', 'es', 'pt', 'fr']; //Codificador
-
-var countryCode = ['BR', 'CO', 'CU', 'PR']; //Codificador
-
-var itemForm = ['a', 'b', 'c', 'd']; //Codificador
-
-var computerFileType = ['a', 'b', 'c', 'd']; //Codificador
-
-var cartographicTypeMaterial = ['a', 'b', 'c', 'd']; //Codificador
-
-var newspaperType = ['l', 'n', 'p', 'u']; //Codificador
-
-var visualMaterialType = ['a', 'c', 'f', 'k']; //Codificador
-
-var specificDesignationMaterial = ['c', 'd', 'e', 'f']; //Codificador
-
-/**
- * Dictionary Schema
- */
 var ThesisSchema = new Schema({
-    v1: { // CÓDIGO DEL CENTRO
+    v1: { // CÓDIGO DEL CENTRO (LLenado automatico)
         type: String,
         required: true, //Es requerido porque es llenado automaticamente por el sistema (NOTA: Averiguar como el lildbiweb viejo obtenia este codigo)
         trim: true
@@ -111,12 +223,12 @@ var ThesisSchema = new Schema({
             required: true
         }
     ],
-    v5: { //TIPO DE LITERATURA
+    v5: { //TIPO DE LITERATURA (LLenado automatico)
         type: String,
         enum: literatureTypes,
         required: true //Es requerido porque es llenado automaticamente por el sistema
     },
-    v6: { //NIVEL DE TRATAMIENTO
+    v6: { //NIVEL DE TRATAMIENTO (LLenado automatico)
         type: String,
         enum: treatmentLevel,
         required: true //Es requerido porque es llenado automaticamente por el sistema
@@ -137,7 +249,7 @@ var ThesisSchema = new Schema({
             },
             i: { //código del idioma
                 type: String,
-                enum: languagueCode,
+                enum: languageCode,
                 required: true,
                 trim: true
             },
@@ -163,12 +275,18 @@ var ThesisSchema = new Schema({
     ],
     v9: { //TIPO DE REGISTRO
         type: String,
-        enum: registerType
+        default: null, //Para que exista y pueda efectuarse la validacion
+        enum: registerType,
+        validate: [validate_v9, 'The value {{VALUE}} is not compatible with methodology of databases LILACS'],
+        required: true
     },
     v10: [ //AUTOR PERSONAL (nivel analítico)
         {
             _id: false,
-            _: String, //nombre de la persona responsable por el contenido intelectual de un documento
+            _: { //nombre de la persona responsable por el contenido intelectual de un documento
+                type: String,
+                validate: [validate_v10__, 'The name ({VALUE}) has no comma']
+            },
             s1: { //afiliación nivel 1
                 type: String,
                 validate: [validate_v10_s1, 'The country is obligatory when the affiliation was especificated in field v10']
@@ -199,6 +317,8 @@ var ThesisSchema = new Schema({
     ],
     v13: { //TÍTULO TRADUCIDO AL INGLÉS (nivel analítico)
         type: String,
+        default: null, //Para que exista y pueda efectuarse la validacion
+        validate: [validate_v13, 'The translation must be specified in the field "v13"'],
         trim: true
     },
     v14: [ //PÁGINAS (nivel analítico)
@@ -206,7 +326,7 @@ var ThesisSchema = new Schema({
             _id: false,
             _: { //paginacion irregular o inexistente
                 type: String,
-                match: [/^\[\d+-\d+\]$/, 'The irregular pagination ({VALUE}) must match with "[initPage-lastPage]" format']
+                match: [/^\[\d+-?\d*\]$/, 'The irregular pagination ({VALUE}) must be between "[]"']
             },
             f: { //número inicial
                 type: String
@@ -219,7 +339,10 @@ var ThesisSchema = new Schema({
     v16: [ //AUTOR PERSONAL (nivel monográfico)
         {
             _id: false,
-            _: String, //nombre de la persona responsable por el contenido intelectual de un documento
+            _: { //nombre de la persona responsable por el contenido intelectual de un documento
+                type: String,
+                validate: [validate_v16__, 'The name ({VALUE}) has no comma']
+            },
             s1: { //afiliación
                 type: String,
                 validate: [validate_v16_s1, 'The country is obligatory when the affiliation was especificated in field v16']
@@ -239,8 +362,7 @@ var ThesisSchema = new Schema({
             _id: false,
             _: { //título del documento
                 type: String,
-                required: true,
-                lowercase: true
+                required: true
             },
             i: { //código del idioma
                 type: String,
@@ -251,11 +373,14 @@ var ThesisSchema = new Schema({
     ],
     v19: { //TÍTULO TRADUCIDO AL INGLÉS (nivel monográfico)
         type: String,
+        default: null, //Para que exista y pueda efectuarse la validacion
+        validate: [validate_v19, 'The translation must be specified in the field "v19"'],
         trim: true
     },
     v20: { //PÁGINAS (nivel monográfico)
         type: String,
-        required: true,
+        default: null, //Para que exista y pueda efectuarse la validacion
+        validate: [validate_v20, 'The field "v20" is obligatory, if is not an electronic document'],
         trim: true
     },
     v38: [ //INFORMACIÓN DESCRIPTIVA
@@ -313,7 +438,7 @@ var ThesisSchema = new Schema({
         type: String,
         trim: true
     },
-    v62: [ //EDITORA
+    v62: [ //EDITORA   //es repetible???????????????
         {
             type: String,
             trim: true,
@@ -329,9 +454,10 @@ var ThesisSchema = new Schema({
         trim: true,
         required: true
     },
-    v65: { //FECHA NORMALIZADA
+    v65: { //FECHA NORMALIZADA  ------- //FALTA VALIDAR BIEN
         type: Number,
-        validate: [validate_v65, 'The normalized date must have 8 characters exactly']
+        default: null, //Para que exista y pueda efectuarse la validacion
+        validate: [validate_v65, 'The normalized date ({VALUE}) must have 8 characters exactly']
     },
     v66: { //CIUDAD DE PUBLICACIÓN
         type: String,
@@ -340,6 +466,8 @@ var ThesisSchema = new Schema({
     },
     v67: { //PAÍS DE PUBLICACIÓN
         type: String,
+        default: null, //Para que exista y pueda efectuarse la validacion
+        validate: [validate_v67, 'Entering information in the field "v67", is conditioned to field "v66"'],
         enum: countryCode
     },
     v68: [ //SÍMBOLO
@@ -351,7 +479,7 @@ var ThesisSchema = new Schema({
     v69: { //ISBN
         type: String,
         trim: true,
-        validate: [validate_v69, 'The ISBN dont must have more than 13 characters']
+        validate: [validate_v69, 'The ISBN ({VALUE}) dont must have more than 13 characters']
     },
     v71: [ //TIPO DE PUBLICACIÓN    ************//Utiliza el DeSC
         {
@@ -363,10 +491,12 @@ var ThesisSchema = new Schema({
         type: Number
     },
     v74: { //ALCANCE TEMPORAL (DESDE)
-        type: Number
+        type: Number,
+        validate: [validate_v74, 'The field "v74" must be lower than "v75"']
     },
     v75: { //ALCANCE TEMPORAL (HASTA)
-        type: Number
+        type: Number,
+        validate: [validate_v75, 'Entering information in the field "v75", is conditioned to the field "v74"']
     },
     v76: [ //DESCRIPTOR PRECODIFICADO   ************//Utiliza el DeSC
         {
@@ -391,7 +521,7 @@ var ThesisSchema = new Schema({
             _id: false,
             _: { //resumen
                 type: String,
-                validate: [validate_v83, 'The summary instance dont must have more than 2000 characters']
+                validate: [validate_v83, 'The summary instance ({VALUE}) dont must have more than 2000 characters']
             },
             i: { //codigo del idioma
                 type: String,
@@ -399,10 +529,10 @@ var ThesisSchema = new Schema({
             }
         }
     ],
-    v84: { //FECHA DE TRANSFERENCIA PARA LA BASE DE DATOS
+    v84: { //FECHA DE TRANSFERENCIA PARA LA BASE DE DATOS   (LLenado automatico)
         type: Number,
         trim: true,
-        validate: [validate_v84, 'The transfered date to database must have 8 characters exactly'],
+        validate: [validate_v84, 'The transfered date ({VALUE}) to database must have 8 characters exactly'],
         required: true
     },
     v85: [ //PALABRAS-LLAVE DEL AUTOR  ************//Utiliza el DeSC
@@ -445,7 +575,7 @@ var ThesisSchema = new Schema({
             }
         }
     ],
-    v91: {  //FECHA DE CREACIÓN DEL REGISTRO
+    v91: {  //FECHA DE CREACIÓN DEL REGISTRO   (LLenado automatico)
         _: { //fecha en formato ISO 8601:1988
             type: Number,
             required: true
@@ -469,13 +599,13 @@ var ThesisSchema = new Schema({
             required: true
         }
     },
-    v92: [ //DOCUMENTALISTA
+    v92: [ //DOCUMENTALISTA   (LLenado automatico)
         {
             type: String,
             trim: true
         }
     ],
-    v93: {  //FECHA DE LA ÚLTIMA MODIFICACIÓN
+    v93: {  //FECHA DE LA ÚLTIMA MODIFICACIÓN   (LLenado automatico)
         _: { //fecha en formato ISO 8601:1988
             type: Number,
             required: true
@@ -499,13 +629,15 @@ var ThesisSchema = new Schema({
             required: true
         }
     },
-    v98: { //REGISTRO COMPLEMENTARIO (MONOGRAFIA, NO CONVENCIONAL, COLECCIÓN, SERIE O TESIS, DISERTACIÓN)
+    v98: { //REGISTRO COMPLEMENTARIO (MONOGRAFIA, NO CONVENCIONAL, COLECCIÓN, SERIE O TESIS, DISERTACIÓN)   (LLenado automatico)
         type: String,
         trim: true,
         required: true
     },
     v110: { //FORMA DEL ÍTEM
         type: String,
+        default: null, //Para que exista y pueda efectuarse la validacion
+        validate: [validate_v110, 'For the database LILACS, the traditional material who has an electronic format "v8", must be fill with option Electronic (s)'],
         enum: itemForm
     },
     v111: { //TIPO DE ARCHIVO DE COMPUTADOR
@@ -522,6 +654,8 @@ var ThesisSchema = new Schema({
     },
     v114: { //TIPO DE MATERIAL VISUAL
         type: String,
+        default: null, //Para que exista y pueda efectuarse la validacion
+        validate: [validate_v114, 'For databases LILACS, the type of visual material "v114" must be Film (m) or Video Recorder (v)'],
         enum: visualMaterialType
     },
     v115: { //DESIGNACIÓN ESPECÍFICA DEL MATERIAL (MATERIAL NO PROYECTABLE)
@@ -576,15 +710,186 @@ var ThesisSchema = new Schema({
     },
     v899: { //VERSIÓN DEL SOFTWARE
         type: String,
-        trim: true
+        trim: true,
+        required: true
     }
 
 }, { strict: false });
 
 
-ThesisSchema.path('v12').validate(function (value) {
+/**********************************************************************************
+ * Pre-validate hook (More Advanced Validations).
+ **********************************************************************************/
+
+ThesisSchema.pre('validate', function (next) {
+    //console.log('Antes: ' + JSON.stringify(this));
+
+///**************** Eliminar los campos que no pertenescan a los niveles de tratamiento correspondientes, para una Serie Monografia. ****************/
+
+    if (this.v5 === 'T') {
+        if (this.v6 === 'm') {
+            delete this._doc.v10;
+            delete this._doc.v12;
+            delete this._doc.v13;
+            delete this._doc.v14;
+        }
+
+        delete this._doc.v11;
+        delete this._doc.v17;
+        delete this._doc.v21;
+        delete this._doc.v23;
+        delete this._doc.v24;
+        delete this._doc.v25;
+        delete this._doc.v26;
+        delete this._doc.v27;
+        delete this._doc.v30;
+        delete this._doc.v31;
+        delete this._doc.v32;
+        delete this._doc.v35;
+        delete this._doc.v52;
+        delete this._doc.v53;
+        delete this._doc.v54;
+        delete this._doc.v55;
+        delete this._doc.v56;
+        delete this._doc.v57;
+        delete this._doc.v58;
+        delete this._doc.v59;
+        delete this._doc.v60;
+        delete this._doc.v70;
+        delete this._doc.v101;
+        delete this._doc.v102;
+        delete this._doc.v700;
+        delete this._doc.v779;
+    }
+
+
+//**************** v9 Validations *****************/
+
+    if (this.v9 === 'm') {
+        delete this._doc.v110;
+        delete this._doc.v112;
+        delete this._doc.v113;
+        delete this._doc.v114;
+        delete this._doc.v115;
+    }
+    if (this.v9 === 'a' || this.v9 === 'c' || this.v9 === 'd' || this.v9 === 'i' || this.v9 === 'j' || this.v9 === 'p' || this.v9 === 't') {
+        delete this._doc.v111;
+        delete this._doc.v112;
+        delete this._doc.v113;
+        delete this._doc.v114;
+        delete this._doc.v115;
+    }
+    if (this.v9 === 'e' || this.v9 === 'f') {
+        delete this._doc.v111;
+        delete this._doc.v113;
+        delete this._doc.v114;
+        delete this._doc.v115;
+    }
+    if (this.v9 === 'g' || this.v9 === 'r' || this.v9 === 'o') {
+        delete this._doc.v111;
+        delete this._doc.v112;
+        delete this._doc.v113;
+        delete this._doc.v115;
+    }
+    if (this.v9 === 'k') {
+        delete this._doc.v111;
+        delete this._doc.v112;
+        delete this._doc.v113;
+    }
+
+
+//**************** Other Validations *****************/
+
+    if (this.v6 === 'am ' && this.v10 && this.v10.length) {
+        for (var i = 0; i < this.v10.length; i++) {
+            if (!this.v10[i].s1 || (this.v10[i].s1 === 's.af')) {  //Si el campo 's1' de v16 no existe o tiene valor 's.af' entonces eliminar los otros datos de afiliacion
+                delete this.v10[i]._doc.s2;
+                delete this.v10[i]._doc.s3;
+                delete this.v10[i]._doc.p;
+                delete this.v10[i]._doc.c;
+            }
+        }
+    }
+
+    if (this.v16 && this.v16.length) {
+        for (var i = 0; i < this.v16.length; i++) {
+            if (!this.v16[i].s1 || (this.v16[i].s1 === 's.af')) {  //Si el campo 's1' de v16 no existe o tiene valor 's.af' entonces eliminar los otros datos de afiliacion
+                delete this.v16[i]._doc.s2;
+                delete this.v16[i]._doc.s3;
+                delete this.v16[i]._doc.p;
+                delete this.v16[i]._doc.c;
+            }
+        }
+    }
+
+
+    next();
+});
+
+
+/**********************************************************************************
+ * Validations Document Level (Advanced).
+ **********************************************************************************/
+
+ThesisSchema.path('v4').validate(function (value) {
     return value.length ? true : false;
+}, 'The field "v4" is obligatory');
+
+ThesisSchema.path('v10').validate(function (value) {
+    if (this.v6 === 'am') {
+        if (!value.length) {
+            return false;
+        }
+        for (var i = 0; i < value.length; i++) {
+            if (value[i]._ === 'Anon') {  //Si existe al menos un autor anonimo
+                return false;
+            }
+        }
+    }
+    return true;
+}, 'The field "v10" is obligatory, the author cant be anonymous');
+
+ThesisSchema.path('v12').validate(function (value) {
+    if (this.v6 === 'am' && !value.length) {
+        return false;
+    }
+    return true;
 }, 'The field "v12" is obligatory');
+
+ThesisSchema.path('v14').validate(function (value) { //1
+    if (value && !value.length && !this.v8.length && (this.v6 === 'am')) {
+        for (var i = 0; i < this.v38.length; i++) {
+            if (this.v38[i].a === 'CD-ROM' || this.v38[i].a === 'Disquette') {
+                return true;
+            }
+        }
+        return false;
+    }
+    return true;
+}, 'The field "v14" is obligatory, if is not an electronic document');
+
+ThesisSchema.path('v14').validate(function (value) { //2
+    if (value && value.length) {
+        for (var i = 0; i < value.length; i++) {
+            if (value[i]._ && (value[i].f || value[i].l)) {  //Si existe al menos en una instancia, valor en los campos "_" y en "f" o "l" al mismo tiempo
+                return false;
+            }
+        }
+    }
+    return true;
+}, 'The pagination in field "v14" dont be "irregular" and "no secuencial" at the same time');
+
+ThesisSchema.path('v16').validate(function (value) {
+    if (!value.length) {
+        return false;
+    }
+    for (var i = 0; i < value.length; i++) {
+        if (value[i]._ === 'Anon') {  //Si existe al menos un autor anonimo
+            return false;
+        }
+    }
+    return true;
+}, 'The field "v16" is obligatory, the author cant be anonymous');
 
 ThesisSchema.path('v18').validate(function (value) {
     return value.length ? true : false;
@@ -594,13 +899,26 @@ ThesisSchema.path('v40').validate(function (value) {
     return value.length ? true : false;
 }, 'The field "v40" is obligatory');
 
-ThesisSchema.path('v87').validate(function (value) {
-    return value.length ? true : false;
-}, 'The field "v87" is obligatory');
+ThesisSchema.path('v62').validate(function (value) {
+    if(!value.length){
+        return false;
+    }
+    for (var i = 0; i < value.length; i++) {
+        if(value[i] !== 's.n'){
+            return false;
+        }
+    }
+    return true;
+}, 'The field "v62" is obligatory the value (s.n)');
 
-ThesisSchema.path('v92').validate(function (value) {
-    return value.length ? true : false;
-}, 'The field "v92" is obligatory');
+ThesisSchema.path('v65').validate(function (value) {
+    if (this.v64 === 's.f') {//Si v64 tiene valor "s.f", entonces v65 no debe existir
+        delete this._doc.v65;
+    } else {
+        if (!value)
+            return false;
+    }
+}, 'Entering information in the field "v65", is conditioned to field "v64"');
 
 ThesisSchema.path('v83').validate(function (value) {
     var cant = 0;
@@ -610,87 +928,55 @@ ThesisSchema.path('v83').validate(function (value) {
     return cant <= 6000 ? true : false;
 }, 'The summary dont must have more than 6000 characters in total');
 
+ThesisSchema.path('v87').validate(function (value) {
+    return value.length ? true : false;
+}, 'The field "v87" is obligatory');
 
-/**
- * Pre-save hook
- */
-
-ThesisSchema.pre('save', function (next) { //Las reglas que se definen aqui, tienen que existir independientememte de si el campo al que se le aplica es llenado o no
-
-    if (!this.v10.length) { //Si v10 no son llenados, entonces ponerle valor 'Anon' a v10
-        this.v10.push({'_': 'Anon'});
-    }
-
-    if (!this.v16.length) { //Si v16 no son llenados, entonces ponerle valor 'Anon' a v16
-        this.v16.push({'_': 'Anon'});
-    }
-
-    if (this.v6 === 'as') { //Si v6 es una analitica de serie periodica entonces el campo s1 es obligatorio
-        for (var i = 0; i < this.v10.length; i++) {
-            if (!this.v10[i].s1)
-                return next(new Error('The affiliation is obligatory for analitics of periodic series in the field v10'));
-        }
-        for (var i = 0; i < this.v16.length; i++) {
-            if (!this.v16[i].s1)
-                return next(new Error('The affiliation is obligatory for analitics of periodic series in the field v16'));
-        }
-        for (var i = 0; i < this.v23.length; i++) {
-            if (!this.v23[i].s1)
-                return next(new Error('The affiliation is obligatory for analitics of periodic series in the field v23'));
-        }
-        for (var i = 0; i < this.v49.length; i++) {
-            if (!this.v49[i].s1)
-                return next(new Error('The affiliation is obligatory for analitics of periodic series in the field v49'));
-        }
-    }
-
-    if (this.v5 === 'T') { //Si v5 es una Tesis entonces los campos de afiliacion no deben ser llenados
-        for (var i = 0; i < this.v16.length; i++) {
-            delete this.v16[i]._doc.s1;
-            delete this.v16[i]._doc.s2;
-            delete this.v16[i]._doc.s3;
-            delete this.v16[i]._doc.p;
-            delete this.v16[i]._doc.c;
-            delete this.v16[i]._doc.r;
-        }
-
-        for (var i = 0; i < this.v23.length; i++) {
-            delete this.v23[i]._doc.s1;
-            delete this.v23[i]._doc.s2;
-            delete this.v23[i]._doc.s3;
-            delete this.v23[i]._doc.p;
-            delete this.v23[i]._doc.c;
-            delete this.v23[i]._doc.r;
-        }
-    }
+ThesisSchema.path('v92').validate(function (value) {
+    return value.length ? true : false;
+}, 'The field "v92" is obligatory');
 
 
-    if (this.v64) { //Si v64 existe y tiene valor "s.f", entonces v65 no debe existir
-        if (this.v64 === 's.f') {
-            delete this._doc.v65;
-        } else {
-            if (!this.v65)
-                return next(new Error('The field "v65" must exist because the field "v64" exist'));
-        }
-    }
-
-    if (this.v75 < this.v74) {
-        return next(new Error('The field "v75" must be bigger than "v74"'));
-    }
-
-
-    next();
-});
-
-
-/**
- * Statics
- */
+/**********************************************************************************
+ * Post-validate hook (More Advanced Validations).
+ **********************************************************************************/
 /*
- ThesisSchema.statics.load = function(id, cb) {
+ ThesisSchema.post('validate', function (next) {
+
+ });
+ */
+
+/***********************************************************************************
+ * Pre-save hook (More Advanced Validations).
+ ***********************************************************************************/
+
+ThesisSchema.pre('save', function (next) {
+        for (var obj in this._doc) {
+            //***************** Clean empty arrays ************************
+            if (Array.isArray(this._doc[obj])) {
+                if (!this._doc[obj].length) {
+                    delete this._doc[obj];
+                }
+            }
+            //***************** Clean null fields ************************
+            if (!this._doc[obj]) {
+                delete this._doc[obj];
+            }
+        }
+        next();
+    }
+);
+
+
+/**********************************************************************************
+ * Statics.
+ **********************************************************************************/
+/*
+ NoConventionalSchema.statics.load = function(id, cb) {
  this.findOne({
  _id: id
  }).populate('user', 'name username').exec(cb);
  };
  */
+
 mongoose.model('Thesis', ThesisSchema);

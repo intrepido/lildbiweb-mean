@@ -16,7 +16,7 @@ var literatureTypes = ['S', 'SC', 'SCP', 'SP', 'M', 'MC', 'MCP', 'MP', 'MS', 'MS
 
 var treatmentLevel = ['m', 'mc', 'ms', 'am', 'amc', 'ams', 'as', 'c'];
 
-var languagueCode = ['es', 'en']; //Codificador
+var languageCode = ['es', 'en']; //Codificador
 
 var fileExtension = ['css', 'cmp']; //Codificador
 
@@ -47,12 +47,19 @@ var specificDesignationMaterial = ['c', 'd', 'e', 'f']; //Codificador
  * Validations Squema Level (Simple).
  **********************************************************************************/
 
-
 var validate_v9 = function (value) {
     if ((this.v4.indexOf('LILACS') !== -1) && (value === 'c' || value === 'd' || value === 'e' || value === 'f'  || value === 'j' || value === 'k' || value === 'm' || value === 'o' || value === 'p' || value === 'r' || value === 't')) {
         return false;
     }
     return true;
+};
+
+var validate_v10__ = function (value) {
+    if (value !== 'Anon' && value) { //Si el subcampo _ de v10, existe y no es 'Anon'
+        if (!value.match(/.,./)) //Si el subcampo _ de v10 no contiene coma
+            return false;
+    }
+    return true
 };
 
 var validate_v10_s1 = function (value) {
@@ -266,7 +273,7 @@ var MonographSchema = new Schema({
             },
             i: { //código del idioma
                 type: String,
-                enum: languagueCode,
+                enum: languageCode,
                 required: true,
                 trim: true
             },
@@ -300,7 +307,10 @@ var MonographSchema = new Schema({
     v10: [ //AUTOR PERSONAL (nivel analítico)
         {
             _id: false,
-            _: String, //nombre de la persona responsable por el contenido intelectual de un documento
+            _: { //nombre de la persona responsable por el contenido intelectual de un documento
+                type: String,
+                validate: [validate_v10__, 'The name ({VALUE}) has no comma']
+            },
             s1: { //afiliación nivel 1
                 type: String,
                 validate: [validate_v10_s1, 'The country is obligatory when the affiliation was especificated in field v10']
@@ -417,7 +427,7 @@ var MonographSchema = new Schema({
         validate: [validate_v20, 'The field "v20" is obligatory, if is not an electronic document'],
         trim: true
     },
-    v21: { //VOLUMEN (nivel monográfico)
+    v21: { //VOLUMEN (nivel monográfico) //Se podria pensar para mejorarlo y ponerlo como un Array
         type: String,
         match: [/^((v|pt|t)\.\d+,*)+$/, 'The volume ({VALUE}) must match with (Ej: v.3 or t.3 or pt.3 or v.3,t.6) format'],
         trim: true

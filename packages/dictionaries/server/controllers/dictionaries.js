@@ -13,7 +13,8 @@ exports.add = function (req, res) {
 
 
     var Dictionary = mongoose.model('Dictionary'),
-    Monograph = mongoose.model('Monograph', 'cumed');
+    Monograph = mongoose.model('Monograph', 'cumed'),
+    MonographicSerie = mongoose.model('MonographicSerie', 'cumed');
 
 //Preuba luego borrar todo esto
     /*var dictionary = new Dictionary({
@@ -72,11 +73,11 @@ exports.add = function (req, res) {
 
     });*/
 
-    var monograph =  new Monograph({
+    var monographicSerie =  new MonographicSerie({
         v1: 'BR1.1', //(LLenado automatico)
         v4: 'LILACS', //(LLenado automatico)
-        v5: 'M', //(LLenado automatico)
-        v6: 'm', //(LLenado automatico)
+        v5: 'MS', //(LLenado automatico)
+        v6: 'ams', //(LLenado automatico)
         v84: '20041217', //(LLenado automatico)
         v91: {_: 20060626, i: '14:04:18', f: '14:04:37', t: '0:04:37'}, //(LLenado automatico)
         v92: 'FSM', //(LLenado automatico)
@@ -89,9 +90,6 @@ exports.add = function (req, res) {
             {'_': 'Simpósio de Plantas Medicinais no Brasil', 'i': 'pt'}
         ],
         v13: 'Traducction',
-        v14: [
-            {_: '[5-43]'}
-        ],
         v16: [
             {'_': 'Fidel, Santana', 'p': 'Iran'},
             {'_': 'Fernanadno, Sanchez'}
@@ -104,7 +102,9 @@ exports.add = function (req, res) {
         v25: [
             {'_': 'Cólera: informe técnico', 'i': 'en'}
         ],
-        v40: 'es',
+        v30: [
+            'Este es el titulo'
+        ],
         v62: ['Gente Nueva', 'Guama'],
         v64: '1998',
         v65: 19980000,
@@ -166,7 +166,7 @@ exports.add = function (req, res) {
       var cucu = JSON.stringify(hola);
   });
 */
-    monograph.save(function (err) {
+    monographicSerie.save(function (err) {
         if (err) {
             var modelErrors = [];
 
