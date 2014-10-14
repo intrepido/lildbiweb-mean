@@ -11,7 +11,8 @@ var should = require('should'),
     MonographicSerie = mongoose.model('MonographicSerie', 'cumed'),
     NoConventional = mongoose.model('NoConventional', 'cumed'),
     Thesis = mongoose.model('Thesis', 'cumed'),
-    ThesisMonographicSerie = mongoose.model('ThesisMonographicSerie', 'cumed');
+    ThesisMonographicSerie = mongoose.model('ThesisMonographicSerie', 'cumed'),
+    PeriodicSerie = mongoose.model('PeriodicSerie', 'cumed');
 
 
 
@@ -26,6 +27,7 @@ var monographicSerie;
 var noConventional;
 var thesis;
 var thesisMonographicSerie;
+var periodicSerie;
 
 /**
  * Test Suites
@@ -241,11 +243,58 @@ describe('<Unit Test>', function () {
                     ]
                 });*/
 
-                thesisMonographicSerie = new ThesisMonographicSerie({
+                /*thesisMonographicSerie = new ThesisMonographicSerie({
                     v1: 'BR1.1', //(LLenado automatico)
                     v4: 'LILACS', //(LLenado automatico)
                     v5: 'TS', //(LLenado automatico)
                     v6: 'ams', //(LLenado automatico)
+                    v84: '20041217', //(LLenado automatico)
+                    v91: {_: 20060626, i: '14:04:18', f: '14:04:37', t: '0:04:37'}, //(LLenado automatico)
+                    v92: 'FSM', //(LLenado automatico)
+                    v93: {_: 20060626, i: '14:04:18', f: '14:04:37', t: '0:04:37'}, //(LLenado automatico)
+                    v98: 'FONTE', //(LLenado automatico
+                    v899: 'LILDBIWEB-1.8', //(LLenado automatico
+                    v9: 'a',
+                    v10: [
+                        {'_': 'Fidl, Fernandez'}
+                    ],
+                    v12: [
+                        {'_': 'Cólera: informe técnico', 'i': 'en'}
+                    ],
+                    v14: [
+                        {'_': '[23]'}
+                    ],
+                    v16: [
+                        {'_': 'Fidl, Fernandez'}
+                    ],
+                    v18: [
+                        {'_': 'Cólera: informe técnico', 'i': 'en'},
+                        {'_': 'Simpósio de Plantas Medicinais no Brasil', 'i': 'pt'}
+                    ],
+                    v20: 32,
+                    v30: [
+                        'Este es el titulo'
+                    ],
+                    v40: 'es',
+                    v50: 'Especialista',
+                    v51: 'fadsfa',
+                    v62: ['s.n'],
+                    v64: '1998',
+                    v65: 19980000,
+                    v66: 'La Habana',
+                    v67: 'CU',
+                    v87: [
+                        {d: 'Sarampión', s: 'inmunol', k: 'kakakak'},
+                        {d: 'Vacuna Antisarampión', s: 'inmunol'},
+                        {d: 'Agua', s: 'anal'}
+                    ]
+                });*/
+
+                periodicSerie = new PeriodicSerie({
+                    v1: 'BR1.1', //(LLenado automatico)
+                    v4: 'LILACS', //(LLenado automatico)
+                    v5: 'S', //(LLenado automatico)
+                    v6: 'as', //(LLenado automatico)
                     v84: '20041217', //(LLenado automatico)
                     v91: {_: 20060626, i: '14:04:18', f: '14:04:37', t: '0:04:37'}, //(LLenado automatico)
                     v92: 'FSM', //(LLenado automatico)
@@ -294,7 +343,7 @@ describe('<Unit Test>', function () {
 
         describe('Method Save', function () {
             it('should be able to save without problems', function (done) {
-                return thesisMonographicSerie.save(function (err) {
+                return periodicSerie.save(function (err) {
                     should.not.exist(err);
                     //dictionary.v3[0].a.should.equal(1.00);
                     /*dictionary.title.should.equal('Dictionary Title');
