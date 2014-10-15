@@ -1,15 +1,66 @@
 'use strict';
 
-/**
+/**********************************************************************************
  * Module dependencies.
- */
+ **********************************************************************************/
+
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
 
-/**
- * Validations
- */
+/**********************************************************************************
+ * Enumerators.
+ **********************************************************************************/
+
+var literatureTypes = ['S', 'SC', 'SCP', 'SP', 'M', 'MC', 'MCP', 'MP', 'MS', 'MSC', 'MSP', 'T', 'TS', 'N', 'NC', 'NP'];
+
+var treatmentLevel = ['m', 'mc', 'ms', 'am', 'amc', 'ams', 'as', 'c'];
+
+var languageCode = ['es', 'en']; //Codificador
+
+var fileExtension = ['css', 'cmp']; //Codificador
+
+var fileType = ['AUDIO', 'BASE DE DADOS', 'COMPACTADO']; //Codificador
+
+var registerType = [null, 'a', 'c', 'd', 'e', 'f', 'g', 'i', 'j', 'k', 'm', 'o', 'p', 'r', 't']; //Codificador
+
+var responsibilityGrade = ['edt', 'com', 'coord', 'org']; //Codificador
+
+var idiomCode = ['en', 'es', 'pt', 'fr']; //Codificador
+
+var countryCode = ['BR', 'CO', 'CU', 'PR']; //Codificador
+
+var itemForm = [null, 'a', 'b', 'c', 'd', 's']; //Codificador
+
+var computerFileType = ['a', 'b', 'c', 'd']; //Codificador
+
+var cartographicTypeMaterial = ['a', 'b', 'c', 'd']; //Codificador
+
+var newspaperType = ['l', 'n', 'p', 'u']; //Codificador
+
+var visualMaterialType = [null, 'm', 'v', 'f', 'k']; //Codificador
+
+var specificDesignationMaterial = ['c', 'd', 'e', 'f']; //Codificador
+
+
+/**********************************************************************************
+ /* Validations Squema Level (Simple).
+ /**********************************************************************************/
+
+var validate_v9 = function (value) {
+    if ((this.v4.indexOf('LILACS') !== -1) && (value === 'c' || value === 'd' || value === 'e' || value === 'f'  || value === 'j' || value === 'k' || value === 'm' || value === 'o' || value === 'p' || value === 'r' || value === 't')) {
+        return false;
+    }
+    return true;
+};
+
+var validate_v10__ = function (value) {
+    if (value !== 'Anon' && value) { //Si el subcampo _ de v10, existe y no es 'Anon'
+        if (!value.match(/.,./)) //Si el subcampo _ de v10 no contiene coma
+            return false;
+    }
+    return true
+};
 
 var validate_v10_s1 = function (value) {
     if (value !== 's.af' && value) { //Si el subcampo s1 de v10, existe y tiene una afiliacion valida, entonces el subcampo p es obligatorio
@@ -19,65 +70,86 @@ var validate_v10_s1 = function (value) {
     return true
 };
 
+var validate_v13 = function (value) {
+    if (this.v12 && this.v12.length) {
+        var temp = false;
+        for (var j = 0; j < this.v12.length; j++) {
+            if (this.v12[j].i === 'en') {  //Si existe al menos un campo en English
+                temp = true;
+            }
+        }
+        if (!temp && !value) { //Si todos los titulos estan en otros idiomas distintos al english y el campo v13 esta vacio
+            return false;
+        }
+        if (temp && value) { //Si al menos un titulo esta en idioma english y el campo v13 esta lleno, entonces elimino el campo v13 con la traduccion
+            delete this._doc.v13;
+        }
+    }
+    return true;
+};
+
 var validate_v35 = function (value) {
     return value.length <= 9;
 };
 
 var validate_v55 = function (value) {
-    return value.toString().length === 8;
+    if (value) {
+        return value.toString().length === 8;
+    }
 };
 
 var validate_v65 = function (value) {
-    return value.toString().length === 8;
+    if (value) {
+        return value.toString().length === 8;
+    }
+
+};
+
+var validate_v74 = function (value) {
+    if (this.v75) {
+        if (this.v75 <= value) { //Si v75 es menor que v74
+            return false;
+        }
+    }
+    return true;
+};
+
+var validate_v75 = function (value) {
+    if (!this.v74) {
+        return false;
+    }
+    return true;
 };
 
 var validate_v84 = function (value) {
-    return value.toString().length === 8;
+    return (value && value.toString().length) === 8;
 };
 
 var validate_v83 = function (value) {
     return value.length <= 2000;
 };
 
+var validate_v110 = function (value) {
+    if ((this.v4.indexOf('LILACS') !== -1) && this.v8.length && (value !== 's')) {
+        return false;
+    }
+    return true;
+};
 
-/**
- * Enumerators.
- */
-var literatureTypes = ['S', 'SC', 'SCP', 'SP', 'M', 'MC', 'MCP', 'MP', 'MS', 'MSC', 'MSP', 'T', 'TS', 'N', 'NC', 'NP'];
+var validate_v114 = function (value) {
+    if ((this.v4.indexOf('LILACS') !== -1) && this.v9 === 'g' && value !== 'm' && value !== 'v') {
+        return false;
+    }
+    return true;
+};
 
-var treatmentLevel = ['m', 'mc', 'ms', 'am', 'amc', 'ams', 'as', 'c'];
 
-var languagueCode = ['es', 'en']; //Codificador
+/**********************************************************************************
+ * Periodic Serie Schema.
+ **********************************************************************************/
 
-var fileExtension = ['css', 'cmp']; //Codificador
-
-var fileType = ['css', 'cmp']; //Codificador
-
-var registerType = ['a', 'c', 'd']; //Codificador
-
-var responsibilityGrade = ['edt', 'com', 'coord', 'org']; //Codificador
-
-var idiomCode = ['en', 'es', 'pt', 'fr']; //Codificador
-
-var countryCode = ['BR', 'CO', 'CU', 'PR']; //Codificador
-
-var itemForm = ['a', 'b', 'c', 'd']; //Codificador
-
-var computerFileType = ['a', 'b', 'c', 'd']; //Codificador
-
-var cartographicTypeMaterial = ['a', 'b', 'c', 'd']; //Codificador
-
-var newspaperType = ['l', 'n', 'p', 'u']; //Codificador
-
-var visualMaterialType = ['a', 'c', 'f', 'k']; //Codificador
-
-var specificDesignationMaterial = ['c', 'd', 'e', 'f']; //Codificador
-
-/**
- * Dictionary Schema
- */
 var PeriodicSerieSchema = new Schema({
-    v1: { // CÓDIGO DEL CENTRO
+    v1: { // CÓDIGO DEL CENTRO (LLenado automatico)
         type: String,
         required: true, //Es requerido porque es llenado automaticamente por el sistema (NOTA: Averiguar como el lildbiweb viejo obtenia este codigo)
         trim: true
@@ -99,12 +171,12 @@ var PeriodicSerieSchema = new Schema({
             required: true
         }
     ],
-    v5: { //TIPO DE LITERATURA
+    v5: { //TIPO DE LITERATURA (LLenado automatico)
         type: String,
         enum: literatureTypes,
         required: true //Es requerido porque es llenado automaticamente por el sistema
     },
-    v6: { //NIVEL DE TRATAMIENTO
+    v6: { //NIVEL DE TRATAMIENTO (LLenado automatico)
         type: String,
         enum: treatmentLevel,
         required: true //Es requerido porque es llenado automaticamente por el sistema
@@ -119,7 +191,7 @@ var PeriodicSerieSchema = new Schema({
             },
             i: { //código del idioma
                 type: String,
-                enum: languagueCode,
+                enum: languageCode,
                 required: true,
                 trim: true
             },
@@ -145,12 +217,18 @@ var PeriodicSerieSchema = new Schema({
     ],
     v9: { //TIPO DE REGISTRO
         type: String,
-        enum: registerType
+        default: null, //Para que exista y pueda efectuarse la validacion
+        enum: registerType,
+        validate: [validate_v9, 'The value {{VALUE}} is not compatible with methodology of databases LILACS'],
+        required: true
     },
     v10: [ //AUTOR PERSONAL (nivel analítico)
         {
             _id: false,
-            _: String, //nombre de la persona responsable por el contenido intelectual de un documento
+            _: { //nombre de la persona responsable por el contenido intelectual de un documento
+                type: String,
+                validate: [validate_v10__, 'The name ({VALUE}) has no comma']
+            },
             s1: { //afiliación nivel 1
                 type: String,
                 validate: [validate_v10_s1, 'The country is obligatory when the affiliation was especificated in field v10']
@@ -191,6 +269,8 @@ var PeriodicSerieSchema = new Schema({
     ],
     v13: { //TÍTULO TRADUCIDO AL INGLÉS (nivel analítico)
         type: String,
+        default: null, //Para que exista y pueda efectuarse la validacion
+        validate: [validate_v13, 'The translation must be specified in the field "v13"'],
         trim: true
     },
     v14: [ //PÁGINAS (nivel analítico)
@@ -198,7 +278,7 @@ var PeriodicSerieSchema = new Schema({
             _id: false,
             _: { //paginacion irregular o inexistente
                 type: String,
-                match: [/^\[\d+-\d+\]$/, 'The irregular pagination ({VALUE}) must match with "[initPage-lastPage]" format']
+                match: [/^\[\d+-?\d*\]$/, 'The irregular pagination ({VALUE}) must be between "[]"']
             },
             f: { //número inicial
                 type: String
@@ -269,17 +349,18 @@ var PeriodicSerieSchema = new Schema({
     ],
     v54: { //EVENTO – FECHA
         type: String,
-        trim: true,
-        required: true
+        default: null, //Para que exista y pueda efectuarse la validacion
+        trim: true
     },
     v55: { //FECHA NORMALIZADA
         type: Number,
-        validate: [validate_v55, 'The normalized date must have 8 characters exactly']
+        default: null, //Para que exista y pueda efectuarse la validacion
+        validate: [validate_v55, 'The normalized date ({VALUE}) must have 8 characters exactly']
     },
     v56: { //EVENTO – CIUDAD
         type: String,
-        trim: true,
-        required: true
+        default: null, //Para que exista y pueda efectuarse la validacion
+        trim: true
     },
     v57: { //EVENTO – PAÍS
         type: String,
@@ -308,9 +389,10 @@ var PeriodicSerieSchema = new Schema({
         trim: true,
         required: true
     },
-    v65: { //FECHA NORMALIZADA
+    v65: { //FECHA NORMALIZADA  ------- //FALTA VALIDAR BIEN
         type: Number,
-        validate: [validate_v65, 'The normalized date must have 8 characters exactly']
+        default: null, //Para que exista y pueda efectuarse la validacion
+        validate: [validate_v65, 'The normalized date ({VALUE}) must have 8 characters exactly']
     },
     v71: [ //TIPO DE PUBLICACIÓN    ************//Utiliza el DeSC
         {
@@ -322,10 +404,12 @@ var PeriodicSerieSchema = new Schema({
         type: Number
     },
     v74: { //ALCANCE TEMPORAL (DESDE)
-        type: Number
+        type: Number,
+        validate: [validate_v74, 'The field "v74" must be lower than "v75"']
     },
     v75: { //ALCANCE TEMPORAL (HASTA)
-        type: Number
+        type: Number,
+        validate: [validate_v75, 'Entering information in the field "v75", is conditioned to the field "v74"']
     },
     v76: [ //DESCRIPTOR PRECODIFICADO   ************//Utiliza el DeSC
         {
@@ -358,10 +442,10 @@ var PeriodicSerieSchema = new Schema({
             }
         }
     ],
-    v84: { //FECHA DE TRANSFERENCIA PARA LA BASE DE DATOS
+    v84: { //FECHA DE TRANSFERENCIA PARA LA BASE DE DATOS   (LLenado automatico)
         type: Number,
         trim: true,
-        validate: [validate_v84, 'The transfered date to database must have 8 characters exactly'],
+        validate: [validate_v84, 'The transfered date ({VALUE}) to database must have 8 characters exactly'],
         required: true
     },
     v85: [ //PALABRAS-LLAVE DEL AUTOR  ************//Utiliza el DeSC
@@ -404,7 +488,7 @@ var PeriodicSerieSchema = new Schema({
             }
         }
     ],
-    v91: {  //FECHA DE CREACIÓN DEL REGISTRO
+    v91: {  //FECHA DE CREACIÓN DEL REGISTRO   (LLenado automatico)
         _: { //fecha en formato ISO 8601:1988
             type: Number,
             required: true
@@ -428,13 +512,13 @@ var PeriodicSerieSchema = new Schema({
             required: true
         }
     },
-    v92: [ //DOCUMENTALISTA
+    v92: [ //DOCUMENTALISTA   (LLenado automatico)
         {
             type: String,
             trim: true
         }
     ],
-    v93: {  //FECHA DE LA ÚLTIMA MODIFICACIÓN
+    v93: {  //FECHA DE LA ÚLTIMA MODIFICACIÓN   (LLenado automatico)
         _: { //fecha en formato ISO 8601:1988
             type: Number,
             required: true
@@ -473,6 +557,8 @@ var PeriodicSerieSchema = new Schema({
     },
     v110: { //FORMA DEL ÍTEM
         type: String,
+        default: null, //Para que exista y pueda efectuarse la validacion
+        validate: [validate_v110, 'For the database LILACS, the traditional material who has an electronic format "v8", must be fill with option Electronic (s)'],
         enum: itemForm
     },
     v111: { //TIPO DE ARCHIVO DE COMPUTADOR
@@ -489,6 +575,8 @@ var PeriodicSerieSchema = new Schema({
     },
     v114: { //TIPO DE MATERIAL VISUAL
         type: String,
+        default: null, //Para que exista y pueda efectuarse la validacion
+        validate: [validate_v114, 'For databases LILACS, the type of visual material "v114" must be Film (m) or Video Recorder (v)'],
         enum: visualMaterialType
     },
     v115: { //DESIGNACIÓN ESPECÍFICA DEL MATERIAL (MATERIAL NO PROYECTABLE)
@@ -541,17 +629,169 @@ var PeriodicSerieSchema = new Schema({
         type: String,
         trim: true
     },
-    v899: { //VERSIÓN DEL SOFTWARE
+    v899: { //VERSIÓN DEL SOFTWARE   (LLenado automatico)
         type: String,
-        trim: true
+        trim: true,
+        required: true
     }
 
 }, { strict: false });
 
 
-PeriodicSerieSchema.path('v12').validate(function (value) {
+/**********************************************************************************
+ * Pre-validate hook (More Advanced Validations).
+ **********************************************************************************/
+
+PeriodicSerieSchema.pre('validate', function (next) {
+    //console.log('Antes: ' + JSON.stringify(this));
+
+///**************** Eliminar los campos que no pertenescan a los niveles de tratamiento correspondientes, para una Serie Monografia. ****************/
+
+    if (this.v5 === 'S' && this.v6 === 'as') {
+        delete this._doc.v7;
+        delete this._doc.v16;
+        delete this._doc.v17;
+        delete this._doc.v18;
+        delete this._doc.v19;
+        delete this._doc.v20;
+        delete this._doc.v21;
+        delete this._doc.v23;
+        delete this._doc.v24;
+        delete this._doc.v25;
+        delete this._doc.v26;
+        delete this._doc.v27;
+        delete this._doc.v49;
+        delete this._doc.v50;
+        delete this._doc.v51;
+        delete this._doc.v62;
+        delete this._doc.v66;
+        delete this._doc.v67;
+        delete this._doc.v68;
+        delete this._doc.v69;
+    }
+
+//**************** Eliminar los campos de Proyecto (P) y Conferencia (C) en caso de no exitir *****************/
+
+    if (this.v5) {
+        if (this.v5 !== 'SC' && this.v5 !== 'SCP') {//Si no es una Conferencia o Evento (C)
+            delete this._doc.v52;
+            delete this._doc.v53;
+            delete this._doc.v54;
+            delete this._doc.v55;
+            delete this._doc.v56;
+        }
+        if (this.v5 !== 'SP' && this.v5 !== 'SCP') { //Si no es un Proyecto (P)
+            delete this._doc.v58;
+            delete this._doc.v59;
+            delete this._doc.v60;
+        }
+        if (this.v5 !== 'SP' && this.v5 !== 'SC' && this.v5 !== 'SCP') { //Si no es ni Conferencia ni Proyecto
+            delete this._doc.v101;
+            delete this._doc.v102;
+        }
+    }
+
+
+//**************** v9 Validations *****************/
+
+    if (this.v9 === 'm') {
+        delete this._doc.v110;
+        delete this._doc.v112;
+        delete this._doc.v113;
+        delete this._doc.v114;
+        delete this._doc.v115;
+    }
+    if (this.v9 === 'a' || this.v9 === 'c' || this.v9 === 'd' || this.v9 === 'i' || this.v9 === 'j' || this.v9 === 'p' || this.v9 === 't') {
+        delete this._doc.v111;
+        delete this._doc.v112;
+        delete this._doc.v113;
+        delete this._doc.v114;
+        delete this._doc.v115;
+    }
+    if (this.v9 === 'e' || this.v9 === 'f') {
+        delete this._doc.v111;
+        delete this._doc.v113;
+        delete this._doc.v114;
+        delete this._doc.v115;
+    }
+    if (this.v9 === 'g' || this.v9 === 'r' || this.v9 === 'o') {
+        delete this._doc.v111;
+        delete this._doc.v112;
+        delete this._doc.v113;
+        delete this._doc.v115;
+    }
+    if (this.v9 === 'k') {
+        delete this._doc.v111;
+        delete this._doc.v112;
+        delete this._doc.v113;
+    }
+
+
+//**************** Other Validations *****************/
+
+    if (this.v6 === 'ams') {
+        if (!this.v10.length && !this.v11.length) { //Si v10 y v11 no son llenados, entonces ponerle valor 'Anon' a v10
+            this.v10.push({'_': 'Anon'});
+        }
+        if (this.v10.length && this.v11.length) { //Si v10 y v11 son llenados, entonces solo dejar v10 con valor
+            this.v11.splice(0, this.v11.length);
+        }
+
+        if (this.v10.length) {
+            for (var i = 0; i < this.v10.length; i++) {
+                if (!this.v10[i].s1 || (this.v10[i].s1 === 's.af')) {  //Si el campo 's1' de v16 no existe o tiene valor 's.af' entonces eliminar los otros datos de afiliacion
+                    delete this.v10[i]._doc.s2;
+                    delete this.v10[i]._doc.s3;
+                    delete this.v10[i]._doc.p;
+                    delete this.v10[i]._doc.c;
+                }
+            }
+        }
+    }
+
+    next();
+});
+
+
+/**********************************************************************************
+ * Validations Document Level (Advanced).
+ **********************************************************************************/
+
+PeriodicSerieSchema.path('v4').validate(function (value) {
     return value.length ? true : false;
+}, 'The field "v4" is obligatory');
+
+PeriodicSerieSchema.path('v12').validate(function (value) {
+    if ((this.v5 === 'MS' || this.v5 === 'MSC' || this.v5 === 'MSP') && (this.v6 === 'ams')) {
+        if (!value.length) {
+            return false;
+        }
+    }
+    return true;
 }, 'The field "v12" is obligatory');
+
+PeriodicSerieSchema.path('v14').validate(function (value) { //1
+    if (value && !value.length && !this.v8.length && (this.v6 === 'ams')) {
+        for (var i = 0; i < this.v38.length; i++) {
+            if (this.v38[i].a === 'CD-ROM' || this.v38[i].a === 'Disquette') {
+                return true;
+            }
+        }
+        return false;
+    }
+    return true;
+}, 'The field "v14" is obligatory, if is not an electronic document');
+
+PeriodicSerieSchema.path('v14').validate(function (value) { //2
+    if (value && value.length) {
+        for (var i = 0; i < value.length; i++) {
+            if (value[i]._ && (value[i].f || value[i].l)) {  //Si existe al menos en una instancia, valor en los campos "_" y en "f" o "l" al mismo tiempo
+                return false;
+            }
+        }
+    }
+    return true;
+}, 'The pagination in field "v14" dont be "irregular" and "no secuencial" at the same time');
 
 PeriodicSerieSchema.path('v30').validate(function (value) {
     return value.length ? true : false;
@@ -561,13 +801,53 @@ PeriodicSerieSchema.path('v40').validate(function (value) {
     return value.length ? true : false;
 }, 'The field "v40" is obligatory');
 
-PeriodicSerieSchema.path('v87').validate(function (value) {
-    return value.length ? true : false;
-}, 'The field "v87" is obligatory');
+PeriodicSerieSchema.path('v53').validate(function (value) {
+    if (this.v5 === 'MSC') {//Si es una Conferencia o Evento (C)
+        if (!value.length) {
+            return false;
+        }
+    }
+    return true;
+}, 'The field "v53" is obligatory');
 
-PeriodicSerieSchema.path('v92').validate(function (value) {
-    return value.length ? true : false;
-}, 'The field "v92" is obligatory');
+PeriodicSerieSchema.path('v54').validate(function (value) {
+    if (this.v5 === 'MSC') {//Si es una Conferencia o Evento (C)
+        if (!value) {
+            return false;
+        }
+    }
+    return true;
+}, 'The field "v54" is obligatory');
+
+PeriodicSerieSchema.path('v55').validate(function (value) {
+    if (this.v54) {
+        if (this.v54 === 's.f') { //Si v54 tiene valor "s.f", entonces v55 no debe existir
+            delete this._doc.v55;
+        } else {
+            if (!value)
+                return false;
+        }
+    }
+    return true;
+}, 'Entering information in the field "v55", is conditioned to field "v54"');
+
+PeriodicSerieSchema.path('v56').validate(function (value) {
+    if (this.v5 === 'MSC') {//Si es una Conferencia o Evento (C)
+        if (!value) {
+            return false;
+        }
+    }
+    return true;
+}, 'The field "v56" is obligatory');
+
+PeriodicSerieSchema.path('v65').validate(function (value) {
+    if (this.v64 === 's.f') {//Si v64 tiene valor "s.f", entonces v65 no debe existir
+        delete this._doc.v65;
+    } else {
+        if (!value)
+            return false;
+    }
+}, 'Entering information in the field "v65", is conditioned to field "v64"');
 
 PeriodicSerieSchema.path('v83').validate(function (value) {
     var cant = 0;
@@ -577,81 +857,49 @@ PeriodicSerieSchema.path('v83').validate(function (value) {
     return cant <= 6000 ? true : false;
 }, 'The summary dont must have more than 6000 characters in total');
 
+PeriodicSerieSchema.path('v87').validate(function (value) {
+    return value.length ? true : false;
+}, 'The field "v87" is obligatory');
 
-/**
- * Pre-save hook
+PeriodicSerieSchema.path('v92').validate(function (value) {
+    return value.length ? true : false;
+}, 'The field "v92" is obligatory');
+
+
+/**********************************************************************************
+ * Post-validate hook (More Advanced Validations).
+ **********************************************************************************/
+/*
+ PeriodicSerieSchema.post('validate', function (next) {
+
+ });
  */
 
-PeriodicSerieSchema.pre('validate', function (next) {
-    if (!this.v10.length && !this.v11.length) { //Si v10 y v11 no son llenados, entonces ponerle valor 'Anon' a v10
-        this.v10.push({'_': 'Anon'});
-    }
+/***********************************************************************************
+ * Pre-save hook (More Advanced Validations).
+ ***********************************************************************************/
 
-    next();
-});
-
-PeriodicSerieSchema.pre('save', function (next) { //Las reglas que se definen aqui, tienen que existir independientememte de si el campo al que se le aplica es llenado o no
-
-    if (!this.v10.length && !this.v11.length) { //Si v10 y v11 no son llenados, entonces ponerle valor 'Anon' a v10
-        this.v10.push({'_': 'Anon'});
-    }
-
-    if (this.v10.length && this.v11.length) { //Si v10 y v11 son llenados, entonces solo dejar v10 con valor
-        this.v11.splice(0, this.v11.length);
-    }
-
-    if (this.v6 === 'as') { //Si v6 es una analitica de serie periodica entonces el campo s1 es obligatorio
-        for (var i = 0; i < this.v10.length; i++) {
-            if (!this.v10[i].s1)
-                return next(new Error('The affiliation is obligatory for analitics of periodic series in the field v10'));
+PeriodicSerieSchema.pre('save', function (next) {
+        for (var obj in this._doc) {
+            //***************** Clean empty arrays ************************
+            if (Array.isArray(this._doc[obj])) {
+                if (!this._doc[obj].length) {
+                    delete this._doc[obj];
+                }
+            }
+            //***************** Clean null fields ************************
+            if (!this._doc[obj]) {
+                delete this._doc[obj];
+            }
         }
-        for (var i = 0; i < this.v23.length; i++) {
-            if (!this.v23[i].s1)
-                return next(new Error('The affiliation is obligatory for analitics of periodic series in the field v23'));
-        }
+        next();
     }
-
-    if (this.v5 === 'T') { //Si v5 es una Tesis entonces los campos de afiliacion no deben ser llenados
-        for (var i = 0; i < this.v23.length; i++) {
-            delete this.v23[i]._doc.s1;
-            delete this.v23[i]._doc.s2;
-            delete this.v23[i]._doc.s3;
-            delete this.v23[i]._doc.p;
-            delete this.v23[i]._doc.c;
-            delete this.v23[i]._doc.r;
-        }
-    }
-
-    if (this.v54) { //Si v54 existe y tiene valor "s.f", entonces v55 no debe existir
-        if (this.v54 === 's.f') {
-            delete this._doc.v55;
-        } else {
-            if (!this.v55)
-                return next(new Error('The field "v55" must exist because the field "v54" exist'));
-        }
-    }
-
-    if (this.v64) { //Si v64 existe y tiene valor "s.f", entonces v65 no debe existir
-        if (this.v64 === 's.f') {
-            delete this._doc.v65;
-        } else {
-            if (!this.v65)
-                return next(new Error('The field "v65" must exist because the field "v64" exist'));
-        }
-    }
-
-    if (this.v75 < this.v74) {
-        return next(new Error('The field "v75" must be bigger than "v74"'));
-    }
+);
 
 
-    next();
-});
-
-
-/**
- * Statics
- */
+/**********************************************************************************
+ * Statics.
+ **********************************************************************************/
 /*
  PeriodicSerieSchema.statics.load = function(id, cb) {
  this.findOne({
@@ -659,4 +907,5 @@ PeriodicSerieSchema.pre('save', function (next) { //Las reglas que se definen aq
  }).populate('user', 'name username').exec(cb);
  };
  */
+
 mongoose.model('PeriodicSerie', PeriodicSerieSchema);
