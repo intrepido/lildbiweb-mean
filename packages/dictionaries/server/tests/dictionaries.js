@@ -311,30 +311,20 @@ describe('<Unit Test>', function () {
                     v14: [
                         {'_': '[23]'}
                     ],
-                    v16: [
-                        {'_': 'Fidl, Fernandez'}
-                    ],
-                    v18: [
-                        {'_': 'Cólera: informe técnico', 'i': 'en'},
-                        {'_': 'Simpósio de Plantas Medicinais no Brasil', 'i': 'pt'}
-                    ],
-                    v20: 32,
                     v30: [
                         'Este es el titulo'
                     ],
+
                     v40: 'es',
-                    v50: 'Especialista',
-                    v51: 'fadsfa',
-                    v62: ['s.n'],
                     v64: '1998',
                     v65: 19980000,
-                    v66: 'La Habana',
                     v67: 'CU',
                     v87: [
                         {d: 'Sarampión', s: 'inmunol', k: 'kakakak'},
                         {d: 'Vacuna Antisarampión', s: 'inmunol'},
                         {d: 'Agua', s: 'anal'}
-                    ]
+                    ],
+                    v113: 'p'
                 });
 
                 done();

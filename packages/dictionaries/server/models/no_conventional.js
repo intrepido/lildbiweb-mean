@@ -44,11 +44,11 @@ var specificDesignationMaterial = ['c', 'd', 'e', 'f']; //Codificador
 
 
 /**********************************************************************************
-/* Validations Squema Level (Simple).
+ /* Validations Squema Level (Simple).
  /**********************************************************************************/
 
 var validate_v9 = function (value) {
-    if ((this.v4.indexOf('LILACS') !== -1) && (value === 'c' || value === 'd' || value === 'e' || value === 'f'  || value === 'j' || value === 'k' || value === 'm' || value === 'o' || value === 'p' || value === 'r' || value === 't')) {
+    if ((this.v4.indexOf('LILACS') !== -1) && (value === 'c' || value === 'd' || value === 'e' || value === 'f' || value === 'j' || value === 'k' || value === 'm' || value === 'o' || value === 'p' || value === 'r' || value === 't')) {
         return false;
     }
     return true;
@@ -140,6 +140,13 @@ var validate_v55 = function (value) {
     }
 };
 
+var validate_v60 = function (value) {
+    if (!value && !this.v59 && this.v5 === 'SCP' && this.v5 === 'SP') {
+        return false;
+    }
+    return true;
+};
+
 var validate_v65 = function (value) {
     if (value) {
         return value.toString().length === 8;
@@ -194,581 +201,587 @@ var validate_v114 = function (value) {
 };
 
 
-
 /**********************************************************************************
  * No Conventional Schema.
  **********************************************************************************/
 
 var NoConventionalSchema = new Schema({
-    v1: { // CÓDIGO DEL CENTRO (LLenado automatico)
-        type: String,
-        required: true, //Es requerido porque es llenado automaticamente por el sistema (NOTA: Averiguar como el lildbiweb viejo obtenia este codigo)
-        trim: true
-    },
-    v3: [ //LOCALIZACIÓN DEL DOCUMENTO
-        {
-            _id: false,
-            _: String, //codigo del centro
-            a: String, //número de clasificación  (NOTA: Este campo siempre es un float?)
-            b: String, //número del autor
-            c: [String], //información referente al volumen, tomo, parte, número de ejemplares, etc
-            t: Number //número de inventario   (NOTA: Este campo siempre es un numero?)
-        }
-    ],
-    v4: [ //BASE DE DATOS
-        {
-            type: String,
-            trim: true,
-            required: true
-        }
-    ],
-    v5: { //TIPO DE LITERATURA  (LLenado automatico)
-        type: String,
-        enum: literatureTypes,
-        required: true //Es requerido porque es llenado automaticamente por el sistema
-    },
-    v6: { //NIVEL DE TRATAMIENTO   (LLenado automatico)
-        type: String,
-        enum: treatmentLevel,
-        required: true //Es requerido porque es llenado automaticamente por el sistema
-    },
-    v7: [ //NÚMERO DEL REGISTRO
-        {//número único secuencial atribuido al documento por la Institución Procesadora, de acuerdo con su entrada en la biblioteca
-            type: Number,
-            trim: true
-        }
-    ],
-    v8: [ //DIRECCIÓN ELECTRÓNICA
-        {
-            _id: false,
-            u: { //localizador de la fuente
+            v1: { // CÓDIGO DEL CENTRO (LLenado automatico)
                 type: String,
-                required: true,
+                required: true, //Es requerido porque es llenado automaticamente por el sistema (NOTA: Averiguar como el lildbiweb viejo obtenia este codigo)
                 trim: true
             },
-            i: { //código del idioma
+            v3: [ //LOCALIZACIÓN DEL DOCUMENTO
+                {
+                    _id: false,
+                    _: String, //codigo del centro
+                    a: String, //número de clasificación  (NOTA: Este campo siempre es un float?)
+                    b: String, //número del autor
+                    c: [String], //información referente al volumen, tomo, parte, número de ejemplares, etc
+                    t: Number //número de inventario   (NOTA: Este campo siempre es un numero?)
+                }
+            ],
+            v4: [ //BASE DE DATOS
+                {
+                    type: String,
+                    trim: true,
+                    required: true
+                }
+            ],
+            v5: { //TIPO DE LITERATURA  (LLenado automatico)
                 type: String,
-                enum: languageCode,
-                required: true,
-                trim: true
+                enum: literatureTypes,
+                required: true //Es requerido porque es llenado automaticamente por el sistema
             },
-            g: String, //texto completo
-            k: String, //clave
-            l: String, //logon
-            q: { //extensión del archivo
+            v6: { //NIVEL DE TRATAMIENTO   (LLenado automatico)
                 type: String,
-                enum: fileExtension,
-                required: true,
-                trim: true
+                enum: treatmentLevel,
+                required: true //Es requerido porque es llenado automaticamente por el sistema
             },
-            s: Number, //tamaño del archivo
-            x: String, //nota no pública
-            y: { //tipo de archivo
+            v7: [ //NÚMERO DEL REGISTRO
+                {//número único secuencial atribuido al documento por la Institución Procesadora, de acuerdo con su entrada en la biblioteca
+                    type: Number,
+                    trim: true
+                }
+            ],
+            v8: [ //DIRECCIÓN ELECTRÓNICA
+                {
+                    _id: false,
+                    u: { //localizador de la fuente
+                        type: String,
+                        required: true,
+                        trim: true
+                    },
+                    i: { //código del idioma
+                        type: String,
+                        enum: languageCode,
+                        required: true,
+                        trim: true
+                    },
+                    g: String, //texto completo
+                    k: String, //clave
+                    l: String, //logon
+                    q: { //extensión del archivo
+                        type: String,
+                        enum: fileExtension,
+                        required: true,
+                        trim: true
+                    },
+                    s: Number, //tamaño del archivo
+                    x: String, //nota no pública
+                    y: { //tipo de archivo
+                        type: String,
+                        enum: fileType,
+                        required: true,
+                        trim: true
+                    },
+                    z: String //nota pública
+                }
+            ],
+            v9: { //TIPO DE REGISTRO
                 type: String,
-                enum: fileType,
-                required: true,
-                trim: true
-            },
-            z: String //nota pública
-        }
-    ],
-    v9: { //TIPO DE REGISTRO
-        type: String,
-        default: null, //Para que exista y pueda efectuarse la validacion
-        enum: registerType,
-        validate: [validate_v9, 'The value {{VALUE}} is not compatible with methodology of databases LILACS'],
-        required: true
-    },
-    v10: [ //AUTOR PERSONAL (nivel analítico)
-        {
-            _id: false,
-            _: { //nombre de la persona responsable por el contenido intelectual de un documento
-                type: String,
-                validate: [validate_v10__, 'The name ({VALUE}) has no comma']
-            },
-            s1: { //afiliación nivel 1
-                type: String,
-                validate: [validate_v10_s1, 'The country is obligatory when the affiliation was especificated in field v10']
-            },
-            s2: String, //afiliación nivel 2
-            s3: String, //afiliación nivel 1
-            p: String, //país (NOTA: Por que no tiene un codificador de pais en este subcampo?)
-            c: String, //ciudad
-            r: { //grado de responsabilidad
-                type: String,
-                enum: responsibilityGrade
-            }
-        }
-    ],
-    v11: [ //AUTOR INSTITUCIONAL (nivel analítico)
-        {
-            _id: false,
-            _: String, //nombre de la institución responsable por el contenido intelectual de un documento
-            r: { //grado de responsabilidad
-                type: String,
-                enum: responsibilityGrade
-            }
-        }
-    ],
-    v12: [ //TÍTULO (nivel analítico)
-        {
-            _id: false,
-            _: { //título del documento
-                type: String,
+                default: null, //Para que exista y pueda efectuarse la validacion
+                enum: registerType,
+                validate: [validate_v9, 'The value {{VALUE}} is not compatible with methodology of databases LILACS'],
                 required: true
             },
-            i: { //código del idioma
+            v10: [ //AUTOR PERSONAL (nivel analítico)
+                {
+                    _id: false,
+                    _: { //nombre de la persona responsable por el contenido intelectual de un documento
+                        type: String,
+                        validate: [validate_v10__, 'The name ({VALUE}) has no comma']
+                    },
+                    s1: { //afiliación nivel 1
+                        type: String,
+                        validate: [validate_v10_s1, 'The country is obligatory when the affiliation was especificated in field v10']
+                    },
+                    s2: String, //afiliación nivel 2
+                    s3: String, //afiliación nivel 1
+                    p: String, //país (NOTA: Por que no tiene un codificador de pais en este subcampo?)
+                    c: String, //ciudad
+                    r: { //grado de responsabilidad
+                        type: String,
+                        enum: responsibilityGrade
+                    }
+                }
+            ],
+            v11: [ //AUTOR INSTITUCIONAL (nivel analítico)
+                {
+                    _id: false,
+                    _: String, //nombre de la institución responsable por el contenido intelectual de un documento
+                    r: { //grado de responsabilidad
+                        type: String,
+                        enum: responsibilityGrade
+                    }
+                }
+            ],
+            v12: [ //TÍTULO (nivel analítico)
+                {
+                    _id: false,
+                    _: { //título del documento
+                        type: String,
+                        required: true
+                    },
+                    i: { //código del idioma
+                        type: String,
+                        enum: idiomCode,
+                        required: true
+                    }
+                }
+            ],
+            v13: { //TÍTULO TRADUCIDO AL INGLÉS (nivel analítico)
                 type: String,
-                enum: idiomCode,
+                default: null, //Para que exista y pueda efectuarse la validacion
+                validate: [validate_v13, 'The translation must be specified in the field "v13"'],
+                trim: true
+            },
+            v14: [ //PÁGINAS (nivel analítico)
+                {
+                    _id: false,
+                    _: { //paginacion irregular o inexistente
+                        type: String,
+                        match: [/^\[\d+-?\d*\]$/, 'The irregular pagination ({VALUE}) must be between "[]"']
+                    },
+                    f: { //número inicial
+                        type: String
+                    },
+                    l: { //número final
+                        type: String
+                    }
+                }
+            ],
+            v16: [ //AUTOR PERSONAL (nivel monográfico)
+                {
+                    _id: false,
+                    _: { //nombre de la persona responsable por el contenido intelectual de un documento
+                        type: String,
+                        validate: [validate_v16__, 'The name ({VALUE}) has no comma']
+                    },
+                    s1: { //afiliación
+                        type: String,
+                        validate: [validate_v16_s1, 'The country is obligatory when the affiliation was especificated in field v16']
+                    },
+                    s2: String, //afiliación
+                    s3: String, //afiliación
+                    p: String, //país (NOTA: Por que no tiene un codificador de pais en este subcampo?)
+                    c: String, //ciudad
+                    r: { //grado de responsabilidad
+                        type: String,
+                        enum: responsibilityGrade
+                    }
+                }
+            ],
+            v17: [ //AUTOR INSTITUCIONAL (nivel monográfico)
+                {
+                    _id: false,
+                    _: String, //nombre de la institución responsable por el contenido intelectual de un documento
+                    r: { //grado de responsabilidad
+                        type: String,
+                        enum: responsibilityGrade
+                    }
+                }
+            ],
+            v18: [ //TÍTULO (nivel monográfico)
+                {
+                    _id: false,
+                    _: { //título del documento
+                        type: String,
+                        required: true
+                    },
+                    i: { //código del idioma
+                        type: String,
+                        enum: idiomCode,
+                        required: true
+                    }
+                }
+            ],
+            v19: { //TÍTULO TRADUCIDO AL INGLÉS (nivel monográfico)
+                type: String,
+                default: null, //Para que exista y pueda efectuarse la validacion
+                validate: [validate_v19, 'The translation must be specified in the field "v19"'],
+                trim: true
+            },
+            v20: { //PÁGINAS (nivel monográfico)
+                type: String,
+                default: null, //Para que exista y pueda efectuarse la validacion
+                validate: [validate_v20, 'The field "v20" is obligatory, if is not an electronic document'],
+                trim: true
+            },
+            v21: { //VOLUMEN (nivel monográfico) //Se podria pensar para mejorarlo y ponerlo como un Array
+                type: String,
+                match: [/^((v|pt|t)\.\d+,*)+$/, 'The volume ({VALUE}) must match with (Ej: v.3 or t.3 or pt.3 or v.3,t.6) format'],
+                trim: true
+            },
+            v38: [ //INFORMACIÓN DESCRIPTIVA
+                {
+                    _id: false,
+                    b: { //otros detalles físicos (No se pone enum aqui porque se pueden poner detalles que no esten en el codificador)
+                        type: String,
+                        trim: true
+                    },
+                    a: { //extensión del ítem
+                        type: String,
+                        trim: true
+                    },
+                    c: { //dimensión
+                        type: String,
+                        trim: true
+                    },
+                    e: { //material acompañante
+                        type: String,
+                        trim: true
+                    }
+                }
+            ],
+            v40: [ //IDIOMA DEL TEXTO
+                {
+                    type: String,
+                    enum: idiomCode
+                }
+            ],
+            v52: [ //EVENTO - INSTITUCIÓN PATROCINADORA
+                {
+                    type: String, //es repetible???????????????
+                    trim: true
+                }
+            ],
+            v53: [ //EVENTO - NOMBRE
+                {
+                    type: String, //es repetible???????????????
+                    trim: true,
+                    required: true
+                }
+            ],
+            v54: { //EVENTO – FECHA
+                type: String,
+                default: null, //Para que exista y pueda efectuarse la validacion
+                trim: true
+            },
+            v55: { //FECHA NORMALIZADA
+                type: Number,
+                default: null, //Para que exista y pueda efectuarse la validacion
+                validate: [validate_v55, 'The normalized date ({VALUE}) must have 8 characters exactly']
+            },
+            v56: { //EVENTO – CIUDAD
+                type: String,
+                default: null, //Para que exista y pueda efectuarse la validacion
+                trim: true
+            },
+            v57: { //EVENTO – PAÍS
+                type: String,
+                enum: countryCode
+            },
+            v58: [ //PROYECTO - INSTITUCIÓN PATROCINADORA
+                {
+                    type: String, //es repetible???????????????
+                    trim: true
+                }
+            ],
+            v59: { //PROYECTO - NOMBRE
+                type: String, //como indico que el docuemnto no pertenece a un Proyecto????????????????????
+                trim: true
+            },
+            v60: { //PROYECTO – NÚMERO
+                type: String,
+                trim: true,
+                default: null, //Para que exista y pueda efectuarse la validacion
+                validate: [validate_v60, 'The fields "v59" or "v60" must be obligatories']
+            },
+            v61: { //NOTA INTERNA
+                type: String,
+                trim: true
+            },
+            v62: [ //EDITORA    //es repetible???????????????
+                {
+                    type: String,
+                    trim: true,
+                    required: true
+                }
+            ],
+            v63: { //EDICIÓN
+                type: String,
+                trim: true
+            },
+            v64: { //FECHA DE PUBLICACIÓN
+                type: String,
+                trim: true,
+                required: true
+            },
+            v65: { //FECHA NORMALIZADA  ------- //FALTA VALIDAR BIEN
+                type: Number,
+                default: null, //Para que exista y pueda efectuarse la validacion
+                validate: [validate_v65, 'The normalized date ({VALUE}) must have 8 characters exactly']
+            },
+            v66: { //CIUDAD DE PUBLICACIÓN
+                type: String,
+                trim: true,
+                required: true
+            },
+            v67: { //PAÍS DE PUBLICACIÓN
+                type: String,
+                default: null, //Para que exista y pueda efectuarse la validacion
+                validate: [validate_v67, 'Entering information in the field "v67", is conditioned to field "v66"'],
+                enum: countryCode
+            },
+            v68: [ //SÍMBOLO
+                {
+                    type: String,
+                    trim: true
+                }
+            ],
+            v69: { //ISBN
+                type: String,
+                trim: true,
+                validate: [validate_v69, 'The ISBN ({VALUE}) dont must have more than 13 characters']
+            },
+            v71: [ //TIPO DE PUBLICACIÓN    ************//Utiliza el DeSC
+                {
+                    type: String,
+                    trim: true
+                }
+            ],
+            v72: { //NÚMERO TOTAL DE REFERENCIAS
+                type: Number
+            },
+            v74: { //ALCANCE TEMPORAL (DESDE)
+                type: Number,
+                validate: [validate_v74, 'The field "v74" must be lower than "v75"']
+            },
+            v75: { //ALCANCE TEMPORAL (HASTA)
+                type: Number,
+                validate: [validate_v75, 'Entering information in the field "v75", is conditioned to the field "v74"']
+            },
+            v76: [ //DESCRIPTOR PRECODIFICADO   ************//Utiliza el DeSC
+                {
+                    type: String,
+                    trim: true
+                }
+            ],
+            v78: [ //INDIVIDUO COMO TEMA
+                {
+                    type: String,
+                    trim: true
+                }
+            ],
+            v82: [ //REGIÓN NO DECS
+                {
+                    type: String,
+                    trim: true
+                }
+            ],
+            v83: [ //RESUMEN
+                {
+                    _id: false,
+                    _: { //resumen
+                        type: String,
+                        validate: [validate_v83, 'The summary instance ({VALUE}) dont must have more than 2000 characters']
+                    },
+                    i: { //codigo del idioma
+                        type: String,
+                        enum: idiomCode
+                    }
+                }
+            ],
+            v84: { //FECHA DE TRANSFERENCIA PARA LA BASE DE DATOS   (LLenado automatico)
+                type: Number,
+                trim: true,
+                validate: [validate_v84, 'The transfered date ({VALUE}) to database must have 8 characters exactly'],
+                required: true
+            },
+            v85: [ //PALABRAS-LLAVE DEL AUTOR  ************//Utiliza el DeSC
+                {
+                    _id: false,
+                    _: String, //palabra-clave
+                    s: { //calificador
+                        type: String,
+                        trim: true
+                    },
+                    i: { //codigo del idioma
+                        type: String,
+                        enum: idiomCode
+                    }
+                }
+            ],
+            v87: [ //DESCRIPTOR PRIMARIO    ************//Utiliza el DeSC
+                {
+                    _id: false,
+                    d: { //descriptor
+                        type: String,
+                        trim: true
+                    },
+                    s: { //calificador
+                        type: String,
+                        trim: true
+                    }
+                }
+            ],
+            v88: [ //DESCRIPTOR SECUNDARIO    ************//Utiliza el DeSC
+                {
+                    _id: false,
+                    d: { //descriptor
+                        type: String,
+                        trim: true
+                    },
+                    s: { //calificador
+                        type: String,
+                        trim: true
+                    }
+                }
+            ],
+            v91: {  //FECHA DE CREACIÓN DEL REGISTRO   (LLenado automatico)
+                _: { //fecha en formato ISO 8601:1988
+                    type: Number,
+                    required: true
+                },
+                i: { //horario inicial de la creación conforme la norma ISO 8601:1988
+                    type: String,
+                    match: [/\d+:\d+:\d+/, 'The irregular pagination ({VALUE}) must match with (Ej: 14:04:18) format'],
+                    trim: true,
+                    required: true
+                },
+                f: { //horario final de la creación conforme la norma ISO 8601:1988
+                    type: String,
+                    match: [/\d+:\d+:\d+/, 'The irregular pagination ({VALUE}) must match with (Ej: 14:04:37) format'],
+                    trim: true,
+                    required: true
+                },
+                t: { //tiempo total de la creación conforme la norma ISO 8601:1988
+                    type: String,
+                    match: [/\d+:\d+:\d+/, 'The irregular pagination ({VALUE}) must match with (Ej: 0:0:19) format'],
+                    trim: true,
+                    required: true
+                }
+            },
+            v92: [ //DOCUMENTALISTA   (LLenado automatico)
+                {
+                    type: String,
+                    trim: true
+                }
+            ],
+            v93: {  //FECHA DE LA ÚLTIMA MODIFICACIÓN   (LLenado automatico)
+                _: { //fecha en formato ISO 8601:1988
+                    type: Number,
+                    required: true
+                },
+                i: { //horario inicial de la creación conforme la norma ISO 8601:1988
+                    type: String,
+                    match: [/\d+:\d+:\d+/, 'The irregular pagination ({VALUE}) must match with (Ej: 14:04:18) format'],
+                    trim: true,
+                    required: true
+                },
+                f: { //horario final de la creación conforme la norma ISO 8601:1988
+                    type: String,
+                    match: [/\d+:\d+:\d+/, 'The irregular pagination ({VALUE}) must match with (Ej: 14:04:37) format'],
+                    trim: true,
+                    required: true
+                },
+                t: { //tiempo total de la creación conforme la norma ISO 8601:1988
+                    type: String,
+                    match: [/\d+:\d+:\d+/, 'The irregular pagination ({VALUE}) must match with (Ej: 0:0:19) format'],
+                    trim: true,
+                    required: true
+                }
+            },
+            v98: { //REGISTRO COMPLEMENTARIO (MONOGRAFIA, NO CONVENCIONAL, COLECCIÓN, SERIE O TESIS, DISERTACIÓN)   (LLenado automatico)
+                type: String,
+                trim: true,
+                required: true
+            },
+            v101: { //REGISTRO COMPLEMENTARIO (EVENTO)
+                type: String,
+                trim: true
+            },
+            v102: { //REGISTRO COMPLEMENTARIO (PROYECTO)
+                type: String,
+                trim: true
+            },
+            v110: { //FORMA DEL ÍTEM
+                type: String,
+                default: null, //Para que exista y pueda efectuarse la validacion
+                validate: [validate_v110, 'For the database LILACS, the traditional material who has an electronic format "v8", must be fill with option Electronic (s)'],
+                enum: itemForm
+            },
+            v111: { //TIPO DE ARCHIVO DE COMPUTADOR
+                type: String,
+                enum: computerFileType
+            },
+            v112: { //TIPO DE MATERIAL CARTOGRÁFICO
+                type: String,
+                enum: cartographicTypeMaterial
+            },
+            v113: { //TIPO DE PERIÓDICO
+                type: String,
+                enum: newspaperType
+            },
+            v114: { //TIPO DE MATERIAL VISUAL
+                type: String,
+                default: null, //Para que exista y pueda efectuarse la validacion
+                validate: [validate_v114, 'For databases LILACS, the type of visual material "v114" must be Film (m) or Video Recorder (v)'],
+                enum: visualMaterialType
+            },
+            v115: { //DESIGNACIÓN ESPECÍFICA DEL MATERIAL (MATERIAL NO PROYECTABLE)
+                type: String,
+                enum: specificDesignationMaterial
+            },
+            v500: [ //NOTA GENERAL
+                {
+                    type: String,
+                    trim: true
+                }
+            ],
+            v505: [ //NOTA FORMATEADA DE CONTENIDO
+                {
+                    type: String,
+                    trim: true
+                }
+            ],
+            v530: [ //NOTA DE DISPONIBILIDAD DE FORMA FÍSICA ADICIONAL
+                {
+                    type: String,
+                    trim: true
+                }
+            ],
+            v533: [ //NOTA DE REPRODUCCIÓN
+                {
+                    type: String,
+                    trim: true
+                }
+            ],
+            v534: [ //NOTA DE VERSIÓN ORIGINAL
+                {
+                    type: String,
+                    trim: true
+                }
+            ],
+            v610: [ //INSTITUCIÓN COMO TEMA
+                {
+                    type: String,
+                    trim: true
+                }
+            ],
+            v653: [ //DESCRIPTORES LOCALES
+                {
+                    type: String,
+                    trim: true
+                }
+            ],
+            v724: { //NÚMERO DOI
+                type: String,
+                trim: true
+            },
+            v899: { //VERSIÓN DEL SOFTWARE
+                type: String,
+                trim: true,
                 required: true
             }
-        }
-    ],
-    v13: { //TÍTULO TRADUCIDO AL INGLÉS (nivel analítico)
-        type: String,
-        default: null, //Para que exista y pueda efectuarse la validacion
-        validate: [validate_v13, 'The translation must be specified in the field "v13"'],
-        trim: true
-    },
-    v14: [ //PÁGINAS (nivel analítico)
-        {
-            _id: false,
-            _: { //paginacion irregular o inexistente
-                type: String,
-                match: [/^\[\d+-?\d*\]$/, 'The irregular pagination ({VALUE}) must be between "[]"']
-            },
-            f: { //número inicial
-                type: String
-            },
-            l: { //número final
-                type: String
-            }
-        }
-    ],
-    v16: [ //AUTOR PERSONAL (nivel monográfico)
-        {
-            _id: false,
-            _: { //nombre de la persona responsable por el contenido intelectual de un documento
-                type: String,
-                validate: [validate_v16__, 'The name ({VALUE}) has no comma']
-            },
-            s1: { //afiliación
-                type: String,
-                validate: [validate_v16_s1, 'The country is obligatory when the affiliation was especificated in field v16']
-            },
-            s2: String, //afiliación
-            s3: String, //afiliación
-            p: String, //país (NOTA: Por que no tiene un codificador de pais en este subcampo?)
-            c: String, //ciudad
-            r: { //grado de responsabilidad
-                type: String,
-                enum: responsibilityGrade
-            }
-        }
-    ],
-    v17: [ //AUTOR INSTITUCIONAL (nivel monográfico)
-        {
-            _id: false,
-            _: String, //nombre de la institución responsable por el contenido intelectual de un documento
-            r: { //grado de responsabilidad
-                type: String,
-                enum: responsibilityGrade
-            }
-        }
-    ],
-    v18: [ //TÍTULO (nivel monográfico)
-        {
-            _id: false,
-            _: { //título del documento
-                type: String,
-                required: true
-            },
-            i: { //código del idioma
-                type: String,
-                enum: idiomCode,
-                required: true
-            }
-        }
-    ],
-    v19: { //TÍTULO TRADUCIDO AL INGLÉS (nivel monográfico)
-        type: String,
-        default: null, //Para que exista y pueda efectuarse la validacion
-        validate: [validate_v19, 'The translation must be specified in the field "v19"'],
-        trim: true
-    },
-    v20: { //PÁGINAS (nivel monográfico)
-        type: String,
-        default: null, //Para que exista y pueda efectuarse la validacion
-        validate: [validate_v20, 'The field "v20" is obligatory, if is not an electronic document'],
-        trim: true
-    },
-    v21: { //VOLUMEN (nivel monográfico) //Se podria pensar para mejorarlo y ponerlo como un Array
-        type: String,
-        match: [/^((v|pt|t)\.\d+,*)+$/, 'The volume ({VALUE}) must match with (Ej: v.3 or t.3 or pt.3 or v.3,t.6) format'],
-        trim: true
-    },
-    v38: [ //INFORMACIÓN DESCRIPTIVA
-        {
-            _id: false,
-            b: { //otros detalles físicos (No se pone enum aqui porque se pueden poner detalles que no esten en el codificador)
-                type: String,
-                trim: true
-            },
-            a: { //extensión del ítem
-                type: String,
-                trim: true
-            },
-            c: { //dimensión
-                type: String,
-                trim: true
-            },
-            e: { //material acompañante
-                type: String,
-                trim: true
-            }
-        }
-    ],
-    v40: [ //IDIOMA DEL TEXTO
-        {
-            type: String,
-            enum: idiomCode
-        }
-    ],
-    v52: [ //EVENTO - INSTITUCIÓN PATROCINADORA
-        {
-            type: String, //es repetible???????????????
-            trim: true
-        }
-    ],
-    v53: [ //EVENTO - NOMBRE
-        {
-            type: String, //es repetible???????????????
-            trim: true,
-            required: true
-        }
-    ],
-    v54: { //EVENTO – FECHA
-        type: String,
-        default: null, //Para que exista y pueda efectuarse la validacion
-        trim: true
-    },
-    v55: { //FECHA NORMALIZADA
-        type: Number,
-        default: null, //Para que exista y pueda efectuarse la validacion
-        validate: [validate_v55, 'The normalized date ({VALUE}) must have 8 characters exactly']
-    },
-    v56: { //EVENTO – CIUDAD
-        type: String,
-        default: null, //Para que exista y pueda efectuarse la validacion
-        trim: true
-    },
-    v57: { //EVENTO – PAÍS
-        type: String,
-        enum: countryCode
-    },
-    v58: [ //PROYECTO - INSTITUCIÓN PATROCINADORA
-        {
-            type: String, //es repetible???????????????
-            trim: true
-        }
-    ],
-    v59: { //PROYECTO - NOMBRE
-        type: String, //como indico que el docuemnto no pertenece a un Proyecto????????????????????
-        trim: true
-    },
-    v60: { //PROYECTO – NÚMERO
-        type: String,
-        trim: true
-    },
-    v61: { //NOTA INTERNA
-        type: String,
-        trim: true
-    },
-    v62: [ //EDITORA    //es repetible???????????????
-        {
-            type: String,
-            trim: true,
-            required: true
-        }
-    ],
-    v63: { //EDICIÓN
-        type: String,
-        trim: true
-    },
-    v64: { //FECHA DE PUBLICACIÓN
-        type: String,
-        trim: true,
-        required: true
-    },
-    v65: { //FECHA NORMALIZADA  ------- //FALTA VALIDAR BIEN
-        type: Number,
-        default: null, //Para que exista y pueda efectuarse la validacion
-        validate: [validate_v65, 'The normalized date ({VALUE}) must have 8 characters exactly']
-    },
-    v66: { //CIUDAD DE PUBLICACIÓN
-        type: String,
-        trim: true,
-        required: true
-    },
-    v67: { //PAÍS DE PUBLICACIÓN
-        type: String,
-        default: null, //Para que exista y pueda efectuarse la validacion
-        validate: [validate_v67, 'Entering information in the field "v67", is conditioned to field "v66"'],
-        enum: countryCode
-    },
-    v68: [ //SÍMBOLO
-        {
-            type: String,
-            trim: true
-        }
-    ],
-    v69: { //ISBN
-        type: String,
-        trim: true,
-        validate: [validate_v69, 'The ISBN ({VALUE}) dont must have more than 13 characters']
-    },
-    v71: [ //TIPO DE PUBLICACIÓN    ************//Utiliza el DeSC
-        {
-            type: String,
-            trim: true
-        }
-    ],
-    v72: { //NÚMERO TOTAL DE REFERENCIAS
-        type: Number
-    },
-    v74: { //ALCANCE TEMPORAL (DESDE)
-        type: Number,
-        validate: [validate_v74, 'The field "v74" must be lower than "v75"']
-    },
-    v75: { //ALCANCE TEMPORAL (HASTA)
-        type: Number,
-        validate: [validate_v75, 'Entering information in the field "v75", is conditioned to the field "v74"']
-    },
-    v76: [ //DESCRIPTOR PRECODIFICADO   ************//Utiliza el DeSC
-        {
-            type: String,
-            trim: true
-        }
-    ],
-    v78: [ //INDIVIDUO COMO TEMA
-        {
-            type: String,
-            trim: true
-        }
-    ],
-    v82: [ //REGIÓN NO DECS
-        {
-            type: String,
-            trim: true
-        }
-    ],
-    v83: [ //RESUMEN
-        {
-            _id: false,
-            _: { //resumen
-                type: String,
-                validate: [validate_v83, 'The summary instance ({VALUE}) dont must have more than 2000 characters']
-            },
-            i: { //codigo del idioma
-                type: String,
-                enum: idiomCode
-            }
-        }
-    ],
-    v84: { //FECHA DE TRANSFERENCIA PARA LA BASE DE DATOS   (LLenado automatico)
-        type: Number,
-        trim: true,
-        validate: [validate_v84, 'The transfered date ({VALUE}) to database must have 8 characters exactly'],
-        required: true
-    },
-    v85: [ //PALABRAS-LLAVE DEL AUTOR  ************//Utiliza el DeSC
-        {
-            _id: false,
-            _: String, //palabra-clave
-            s: { //calificador
-                type: String,
-                trim: true
-            },
-            i: { //codigo del idioma
-                type: String,
-                enum: idiomCode
-            }
-        }
-    ],
-    v87: [ //DESCRIPTOR PRIMARIO    ************//Utiliza el DeSC
-        {
-            _id: false,
-            d: { //descriptor
-                type: String,
-                trim: true
-            },
-            s: { //calificador
-                type: String,
-                trim: true
-            }
-        }
-    ],
-    v88: [ //DESCRIPTOR SECUNDARIO    ************//Utiliza el DeSC
-        {
-            _id: false,
-            d: { //descriptor
-                type: String,
-                trim: true
-            },
-            s: { //calificador
-                type: String,
-                trim: true
-            }
-        }
-    ],
-    v91: {  //FECHA DE CREACIÓN DEL REGISTRO   (LLenado automatico)
-        _: { //fecha en formato ISO 8601:1988
-            type: Number,
-            required: true
-        },
-        i: { //horario inicial de la creación conforme la norma ISO 8601:1988
-            type: String,
-            match: [/\d+:\d+:\d+/, 'The irregular pagination ({VALUE}) must match with (Ej: 14:04:18) format'],
-            trim: true,
-            required: true
-        },
-        f: { //horario final de la creación conforme la norma ISO 8601:1988
-            type: String,
-            match: [/\d+:\d+:\d+/, 'The irregular pagination ({VALUE}) must match with (Ej: 14:04:37) format'],
-            trim: true,
-            required: true
-        },
-        t: { //tiempo total de la creación conforme la norma ISO 8601:1988
-            type: String,
-            match: [/\d+:\d+:\d+/, 'The irregular pagination ({VALUE}) must match with (Ej: 0:0:19) format'],
-            trim: true,
-            required: true
-        }
-    },
-    v92: [ //DOCUMENTALISTA   (LLenado automatico)
-        {
-            type: String,
-            trim: true
-        }
-    ],
-    v93: {  //FECHA DE LA ÚLTIMA MODIFICACIÓN   (LLenado automatico)
-        _: { //fecha en formato ISO 8601:1988
-            type: Number,
-            required: true
-        },
-        i: { //horario inicial de la creación conforme la norma ISO 8601:1988
-            type: String,
-            match: [/\d+:\d+:\d+/, 'The irregular pagination ({VALUE}) must match with (Ej: 14:04:18) format'],
-            trim: true,
-            required: true
-        },
-        f: { //horario final de la creación conforme la norma ISO 8601:1988
-            type: String,
-            match: [/\d+:\d+:\d+/, 'The irregular pagination ({VALUE}) must match with (Ej: 14:04:37) format'],
-            trim: true,
-            required: true
-        },
-        t: { //tiempo total de la creación conforme la norma ISO 8601:1988
-            type: String,
-            match: [/\d+:\d+:\d+/, 'The irregular pagination ({VALUE}) must match with (Ej: 0:0:19) format'],
-            trim: true,
-            required: true
-        }
-    },
-    v98: { //REGISTRO COMPLEMENTARIO (MONOGRAFIA, NO CONVENCIONAL, COLECCIÓN, SERIE O TESIS, DISERTACIÓN)   (LLenado automatico)
-        type: String,
-        trim: true,
-        required: true
-    },
-    v101: { //REGISTRO COMPLEMENTARIO (EVENTO)
-        type: String,
-        trim: true
-    },
-    v102: { //REGISTRO COMPLEMENTARIO (PROYECTO)
-        type: String,
-        trim: true
-    },
-    v110: { //FORMA DEL ÍTEM
-        type: String,
-        default: null, //Para que exista y pueda efectuarse la validacion
-        validate: [validate_v110, 'For the database LILACS, the traditional material who has an electronic format "v8", must be fill with option Electronic (s)'],
-        enum: itemForm
-    },
-    v111: { //TIPO DE ARCHIVO DE COMPUTADOR
-        type: String,
-        enum: computerFileType
-    },
-    v112: { //TIPO DE MATERIAL CARTOGRÁFICO
-        type: String,
-        enum: cartographicTypeMaterial
-    },
-    v113: { //TIPO DE PERIÓDICO
-        type: String,
-        enum: newspaperType
-    },
-    v114: { //TIPO DE MATERIAL VISUAL
-        type: String,
-        default: null, //Para que exista y pueda efectuarse la validacion
-        validate: [validate_v114, 'For databases LILACS, the type of visual material "v114" must be Film (m) or Video Recorder (v)'],
-        enum: visualMaterialType
-    },
-    v115: { //DESIGNACIÓN ESPECÍFICA DEL MATERIAL (MATERIAL NO PROYECTABLE)
-        type: String,
-        enum: specificDesignationMaterial
-    },
-    v500: [ //NOTA GENERAL
-        {
-            type: String,
-            trim: true
-        }
-    ],
-    v505: [ //NOTA FORMATEADA DE CONTENIDO
-        {
-            type: String,
-            trim: true
-        }
-    ],
-    v530: [ //NOTA DE DISPONIBILIDAD DE FORMA FÍSICA ADICIONAL
-        {
-            type: String,
-            trim: true
-        }
-    ],
-    v533: [ //NOTA DE REPRODUCCIÓN
-        {
-            type: String,
-            trim: true
-        }
-    ],
-    v534: [ //NOTA DE VERSIÓN ORIGINAL
-        {
-            type: String,
-            trim: true
-        }
-    ],
-    v610: [ //INSTITUCIÓN COMO TEMA
-        {
-            type: String,
-            trim: true
-        }
-    ],
-    v653: [ //DESCRIPTORES LOCALES
-        {
-            type: String,
-            trim: true
-        }
-    ],
-    v724: { //NÚMERO DOI
-        type: String,
-        trim: true
-    },
-    v899: { //VERSIÓN DEL SOFTWARE
-        type: String,
-        trim: true,
-        required: true
-    }
 
-}, { strict: false });
+        },
+        {
+            strict: false
+        }
+    )
+    ;
 
 
 /**********************************************************************************

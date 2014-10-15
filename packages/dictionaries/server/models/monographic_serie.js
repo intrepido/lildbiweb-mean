@@ -144,6 +144,13 @@ var validate_v55 = function (value) {
     }
 };
 
+var validate_v60 = function (value) {
+    if (!value && !this.v59 && this.v5 === 'SCP' && this.v5 === 'SP') {
+        return false;
+    }
+    return true;
+};
+
 var validate_v65 = function (value) {
     if (value) {
         return value.toString().length === 8;
@@ -495,7 +502,9 @@ var MonographicSerieSchema = new Schema({
     },
     v60: { //PROYECTO – NÚMERO
         type: String,
-        trim: true
+        trim: true,
+        default: null, //Para que exista y pueda efectuarse la validacion
+        validate: [validate_v60, 'The fields "v59" or "v60" must be obligatories']
     },
     v61: { //NOTA INTERNA
         type: String,

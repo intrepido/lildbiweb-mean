@@ -36,7 +36,7 @@ var computerFileType = ['a', 'b', 'c', 'd']; //Codificador
 
 var cartographicTypeMaterial = ['a', 'b', 'c', 'd']; //Codificador
 
-var newspaperType = ['l', 'n', 'p', 'u']; //Codificador
+var newspaperType = [null, 'l', 'n', 'p', 'u']; //Codificador
 
 var visualMaterialType = [null, 'm', 'v', 'f', 'k']; //Codificador
 
@@ -48,7 +48,7 @@ var specificDesignationMaterial = ['c', 'd', 'e', 'f']; //Codificador
  /**********************************************************************************/
 
 var validate_v9 = function (value) {
-    if ((this.v4.indexOf('LILACS') !== -1) && (value === 'c' || value === 'd' || value === 'e' || value === 'f'  || value === 'j' || value === 'k' || value === 'm' || value === 'o' || value === 'p' || value === 'r' || value === 't')) {
+    if ((this.v4.indexOf('LILACS') !== -1) && (value === 'c' || value === 'd' || value === 'e' || value === 'f' || value === 'j' || value === 'k' || value === 'm' || value === 'o' || value === 'p' || value === 'r' || value === 't')) {
         return false;
     }
     return true;
@@ -88,6 +88,13 @@ var validate_v13 = function (value) {
     return true;
 };
 
+var validate_v32 = function (value) {
+    if (!value && !this.v31) {
+        return false;
+    }
+    return true;
+};
+
 var validate_v35 = function (value) {
     return value.length <= 9;
 };
@@ -96,6 +103,13 @@ var validate_v55 = function (value) {
     if (value) {
         return value.toString().length === 8;
     }
+};
+
+var validate_v60 = function (value) {
+    if (!value && !this.v59 && this.v5 === 'SCP' && this.v5 === 'SP') {
+        return false;
+    }
+    return true;
 };
 
 var validate_v65 = function (value) {
@@ -131,6 +145,13 @@ var validate_v83 = function (value) {
 
 var validate_v110 = function (value) {
     if ((this.v4.indexOf('LILACS') !== -1) && this.v8.length && (value !== 's')) {
+        return false;
+    }
+    return true;
+};
+
+var validate_v113 = function (value) {
+    if ((this.v4.indexOf('LILACS') !== -1) && this.v9 === 'a' && value !== 'p' && value !== 'u') {
         return false;
     }
     return true;
@@ -300,7 +321,9 @@ var PeriodicSerieSchema = new Schema({
     },
     v32: { //NÚMERO DEL FASCICULO (nivel serie)
         type: String,
-        trim: true
+        trim: true,
+        default: null, //Para que exista y pueda efectuarse la validacion
+        validate: [validate_v32, 'The fields "v31" or "v32" must be obligatories']
     },
     v35: { //ISSN
         type: String,
@@ -378,7 +401,9 @@ var PeriodicSerieSchema = new Schema({
     },
     v60: { //PROYECTO – NÚMERO
         type: String,
-        trim: true
+        trim: true,
+        default: null, //Para que exista y pueda efectuarse la validacion
+        validate: [validate_v60, 'The fields "v59" or "v60" must be obligatories']
     },
     v61: { //NOTA INTERNA
         type: String,
@@ -571,6 +596,8 @@ var PeriodicSerieSchema = new Schema({
     },
     v113: { //TIPO DE PERIÓDICO
         type: String,
+        default: null, //Para que exista y pueda efectuarse la validacion
+        validate: [validate_v113, 'For databases LILACS, the field Type of Newspaper "v113", must be Journals (p) or Offprint (v)'],
         enum: newspaperType
     },
     v114: { //TIPO DE MATERIAL VISUAL
@@ -701,7 +728,13 @@ PeriodicSerieSchema.pre('validate', function (next) {
         delete this._doc.v114;
         delete this._doc.v115;
     }
-    if (this.v9 === 'a' || this.v9 === 'c' || this.v9 === 'd' || this.v9 === 'i' || this.v9 === 'j' || this.v9 === 'p' || this.v9 === 't') {
+    if (this.v9 === 'a' && this.v5 === 'S' && this.v6 === 'as') {
+        delete this._doc.v111;
+        delete this._doc.v112;
+        delete this._doc.v114;
+        delete this._doc.v115;
+    }
+    if (this.v9 === 'c' || this.v9 === 'd' || this.v9 === 'i' || this.v9 === 'j' || this.v9 === 'p' || this.v9 === 't') {
         delete this._doc.v111;
         delete this._doc.v112;
         delete this._doc.v113;
@@ -762,7 +795,7 @@ PeriodicSerieSchema.path('v4').validate(function (value) {
 }, 'The field "v4" is obligatory');
 
 PeriodicSerieSchema.path('v12').validate(function (value) {
-    if ((this.v5 === 'MS' || this.v5 === 'MSC' || this.v5 === 'MSP') && (this.v6 === 'ams')) {
+    if ((this.v5 === 'S' || this.v5 === 'SC' || this.v5 === 'SP' || this.v5 === 'SCP') && (this.v6 === 'as')) {
         if (!value.length) {
             return false;
         }
@@ -771,7 +804,7 @@ PeriodicSerieSchema.path('v12').validate(function (value) {
 }, 'The field "v12" is obligatory');
 
 PeriodicSerieSchema.path('v14').validate(function (value) { //1
-    if (value && !value.length && !this.v8.length && (this.v6 === 'ams')) {
+    if (value && !value.length && !this.v8.length && (this.v6 === 'as')) {
         for (var i = 0; i < this.v38.length; i++) {
             if (this.v38[i].a === 'CD-ROM' || this.v38[i].a === 'Disquette') {
                 return true;
@@ -802,7 +835,7 @@ PeriodicSerieSchema.path('v40').validate(function (value) {
 }, 'The field "v40" is obligatory');
 
 PeriodicSerieSchema.path('v53').validate(function (value) {
-    if (this.v5 === 'MSC') {//Si es una Conferencia o Evento (C)
+    if (this.v5 === 'SC' || this.v5 === 'SCP') {//Si es una Conferencia o Evento (C)
         if (!value.length) {
             return false;
         }
@@ -811,7 +844,7 @@ PeriodicSerieSchema.path('v53').validate(function (value) {
 }, 'The field "v53" is obligatory');
 
 PeriodicSerieSchema.path('v54').validate(function (value) {
-    if (this.v5 === 'MSC') {//Si es una Conferencia o Evento (C)
+    if (this.v5 === 'SC' || this.v5 === 'SCP') {//Si es una Conferencia o Evento (C)
         if (!value) {
             return false;
         }
@@ -832,7 +865,7 @@ PeriodicSerieSchema.path('v55').validate(function (value) {
 }, 'Entering information in the field "v55", is conditioned to field "v54"');
 
 PeriodicSerieSchema.path('v56').validate(function (value) {
-    if (this.v5 === 'MSC') {//Si es una Conferencia o Evento (C)
+    if (this.v5 === 'SC' || this.v5 === 'SCP') {//Si es una Conferencia o Evento (C)
         if (!value) {
             return false;
         }

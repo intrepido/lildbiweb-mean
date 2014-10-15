@@ -48,7 +48,7 @@ var specificDesignationMaterial = ['c', 'd', 'e', 'f']; //Codificador
  **********************************************************************************/
 
 var validate_v9 = function (value) {
-    if ((this.v4.indexOf('LILACS') !== -1) && (value === 'c' || value === 'd' || value === 'e' || value === 'f'  || value === 'j' || value === 'k' || value === 'm' || value === 'o' || value === 'p' || value === 'r' || value === 't')) {
+    if ((this.v4.indexOf('LILACS') !== -1) && (value === 'c' || value === 'd' || value === 'e' || value === 'f' || value === 'j' || value === 'k' || value === 'm' || value === 'o' || value === 'p' || value === 'r' || value === 't')) {
         return false;
     }
     return true;
@@ -164,6 +164,13 @@ var validate_v55 = function (value) {
     if (value) {
         return value.toString().length === 8;
     }
+};
+
+var validate_v60 = function (value) {
+    if (!value && !this.v59 && this.v5 === 'SCP' && this.v5 === 'SP') {
+        return false;
+    }
+    return true;
 };
 
 var validate_v65 = function (value) {
@@ -557,7 +564,9 @@ var MonographSchema = new Schema({
     },
     v60: { //PROYECTO – NÚMERO
         type: String,
-        trim: true
+        trim: true,
+        default: null, //Para que exista y pueda efectuarse la validacion
+        validate: [validate_v60, 'The fields "v59" or "v60" must be obligatories']
     },
     v61: { //NOTA INTERNA
         type: String,
